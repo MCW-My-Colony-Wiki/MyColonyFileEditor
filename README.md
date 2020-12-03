@@ -4,7 +4,7 @@
 
 使用方式：
 
-## 初次使用
+## 初次使用與config()
 ### 1.使用package
 
 package預設會執行check_update並有提示訊息
