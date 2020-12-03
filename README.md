@@ -2,10 +2,10 @@
 主要功能是整理My Colony的遊戲資料，並提供使用
 目前尚不支援My Colony 2
 
-* [初次使用與config()](#初次使用與config())
-  * [1.使用package](#1.使用package)
-  * [2.不帶參數的config()](#2.不帶參數的config())
-  * [3.一次調整多項設定](#3.一次調整多項設定)
+* [初次使用與config()](#%E5%88%9D%E6%AC%A1%E4%BD%BF%E7%94%A8%E8%88%87config)
+  * [1.使用package](#1%E4%BD%BF%E7%94%A8package)
+  * [2.不帶參數的config()](#2%E4%B8%8D%E5%B8%B6%E5%8F%83%E6%95%B8%E7%9A%84config)
+  * [3.一次調整多項設定](#3%E4%B8%80%E6%AC%A1%E8%AA%BF%E6%95%B4%E5%A4%9A%E9%A0%85%E8%A8%AD%E5%AE%9A)
 
 ## 初次使用與config()
 ### 1.使用package
