@@ -1,5 +1,5 @@
 {
 	"check_update": true,
-	"show_update_message": true,
+	"show_update_message": false,
 	"timeout": 1
 }

@@ -24,49 +24,52 @@ class Game_file():
 		return self.raw
 	
 	def __len__(self):
-		return len(self.raw)
+		return len(self.parts)
 	
-	def get_part(self, *part):
+	def get_part(self, *parts):
 		part_list = []
 		
-		for part_name in part:
-			#Support use int instead part's name
-			if type(part_name) == int and part_name <= len(self.parts):
-				part_name = self.parts[part_name-1]
-			
+		for part_name in parts:
 			#Error promotion information
-			if part_name not in self.parts:
-				print(f'Invalid part: {part_name}\n\tValid part list:')
+			if type(part_name) == int and part_name > len(self.parts):
+				print(f'Part number out of range, max number: {len(self.parts)}')
+				return
+			elif type(part_name) == str and part_name not in self.parts:
+				print(f'Invalid part name: {part_name}\n\tValid part list:')
 				
 				for i in range(len(self.parts)):
 					print(f'\t\t{i+1}.{self.parts[i]}')
 				
 				return
+			elif type(part_name) != int and type(part_name) != str:
+				print('Only allow use int or str to represent part name')
+				return
 			
-			#Get part from cache or game_file and append it to part_list
-			try:
+			#Support use int instead part's name
+			if type(part_name) == int:
+				part_name = self.parts[part_name - 1]
+			
+			try: #Try get part_data from cache
 				run_here.start()
 				with open(f'cache/data/{self.file_name}_{part_name}.json', encoding = 'UTF-8') as part_file:
 					part_data = json.load(part_file)
 				run_here.end()
-				
-				part = Part(self, part_name, part_data)
-				part_list.append(part)
-			except FileNotFoundError:
+			except FileNotFoundError: #If don't have cache, get part_data from self.data and create cache
 				part_data = self.data[part_name]
-				part = Part(self, part_name, part_data)
 				
 				run_here.start()
 				with open(f'cache/data/{self.file_name}_{part_name}.json', 'w', encoding = 'UTF-8') as part_file:
-					json.dump(part_data, part_file, indent = '\t')
+					json.dump(part_data, part_file, indent = '\t', ensure_ascii = False)
 				run_here.end()
-				
-				part_list.append(part)
+			
+			#create Part and append to part_list
+			part = Part(self.file_name, part_name, part_data)
+			part_list.append(part)
 		
-		
-		if len(part_list) == 1:
+		#len == 0 -> impossible
+		if len(part_list) == 1: #If len == 1 -> only request one part's data -> return Part
 			return part_list[0]
-		else:
+		else: # If len > 1 -> request multi part's data -> return list-Part
 			return part_list
 
 run_here.start()

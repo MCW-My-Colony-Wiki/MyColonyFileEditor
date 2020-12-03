@@ -1,12 +1,12 @@
 import json
 
 class Unit():
-	def __init__(self, part, unit_name, content):
-		self.part = part #for reverse get part
-		self.file = part.file #for reverse get game_file and alias of part.game_file
-		self.name = unit_name #thinking usage
-		self.raw = json.dumps(content, indent = '\t') #type(self.raw) -> str
-		self.data = content #type(self.data) -> dict, str or list
+	def __init__(self, file_name, part_name, unit_name, content):
+		self.file_name = file_name #type(self.file_name) -> str
+		self.part_name = part_name #type(self.part_name) -> str
+		self.name = unit_name #type(self.name) -> str
+		self.raw = json.dumps(content, indent = '\t', ensure_ascii = False) #type(self.raw) -> str | self.data's str format
+		self.data = content #type(self.data) -> dict, str or list | self.raw's dict, str or list format
 	
 	def __repr__(self):
 		return self.raw
