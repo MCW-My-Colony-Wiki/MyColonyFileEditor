@@ -2,6 +2,8 @@
 主要功能是整理My Colony的遊戲資料，並提供使用
 目前尚不支援My Colony 2
 
+* [初次使用與config()](#初次使用與config())
+
 使用方式：
 
 ## 初次使用與config()
