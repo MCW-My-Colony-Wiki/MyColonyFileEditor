@@ -1383,7 +1383,9 @@
             "share-uri":                "Join url:",
             "share-uri-format":         "web+mycolony://join_#charterid",
             "foodreplicator-description":"This machine will process almost all inedibles into delicious food for many. While your people will never know is what their meals are made of...",
-            "warfactory-description":   "Reptilians are well known throughout the galaxy as merchants of death, partly due to their advanced war factory sweatshops, where hundreds of low skilled civilians work around the clock making bombs and other weapons."
+            "warfactory-description":   "Reptilians are well known throughout the galaxy as merchants of death, partly due to their advanced war factory sweatshops, where hundreds of low skilled civilians work around the clock making bombs and other weapons.",
+            "colony_offline":           "Colony Offline",
+            "colony_offline_notice":    "The selected colony is currently offline.  You can only gift resources to an online colony.  Please wait until the player has come online and try again."
         },
         "fr": {
             "new-game-message":         "Commandant, nous venons d'atterrir et nous sommes prêts à fonder une nouvelle colonie. Comment devrions nous la nommer?",

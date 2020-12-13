@@ -1,5 +1,7 @@
 import json
+
 from . import core
+from .check import option_check
 
 run_here = core.run_here()
 
@@ -20,16 +22,7 @@ def config(**items):
 	
 	run_here.end()
 	
-	def check_items():
-		config_data_items = list(config_data.keys())
-		for key in items:
-			if key not in config_data_items:
-				print(f'Invalid config item: {key}')
-				return False
-			if type(items[key]) != type(config_data[key]):
-				print(f'Incorrect config item value type\n\titem: {key}\n\tinput value type: {items[key].__class__.__name__}\n\taccept value type: {config_data[key].__class__.__name__}')
-				return False
-		return True
+	check_result = option_check(items, config_data, type_check = True)
 	
 	def update_config_data():
 		for key in items.keys():
@@ -45,7 +38,7 @@ def config(**items):
 	
 	if len(items.keys()) == 0:
 		return json.dumps(config_data, sort_keys = True, indent = '\t')
-	elif check_items():
+	elif check_result == True:
 		update_content = str()
 		for k, v in items.items():
 			if config_data[k] != v:

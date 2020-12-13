@@ -11,4 +11,5 @@ _config_data = _load_config()
 if _config_data['check_update']:
 	check_update()
 
-from .data import *
+from .get_part import *
+from .get_unit import *

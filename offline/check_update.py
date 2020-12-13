@@ -20,7 +20,7 @@ def get_pack_game_version():
 	
 	return pack_game_version
 
-def _get_game_file_version():
+def get_game_file_version():
 	run_here.start()
 	
 	with open('game_file/game.js') as gf:
@@ -32,7 +32,7 @@ def _get_game_file_version():
 	
 	return game_file_version
 
-def _get_latest_game_version():
+def get_latest_game_version():
 	def update_cache():
 		config_data = _load_config()
 		html = None
@@ -85,13 +85,13 @@ def _get_latest_game_version():
 	
 	return latest_game_version
 
-def _update_pack_game_version():
-	if get_pack_game_version() != _get_game_file_version():
+def update_pack_game_version():
+	if get_pack_game_version() != get_game_file_version():
 		run_here.start()
 		
 		with open('pack_info.json') as pi:
 			pack_info = json.load(pi)
-		pack_info['game_version'] = _get_game_file_version()
+		pack_info['game_version'] = get_game_file_version()
 		
 		with open('pack_info.json', 'w') as pi:
 			json.dump(pack_info, pi, indent = '\t')
@@ -100,10 +100,10 @@ def _update_pack_game_version():
 	else:
 		return True
 
-def _update_game_file(file):
+def update_game_file(file):
 	baseurl = 'https://www.apewebapps.com/apps/my-colony/{version}/{file}.js'
 	config = _load_config()
-	page = requests.get(baseurl.format(version = _get_latest_game_version(), file = file), timeout = config['timeout'])
+	page = requests.get(baseurl.format(version = get_latest_game_version(), file = file), timeout = config['timeout'])
 	page.encoding = 'UTF-8'
 	run_here.start()
 	
@@ -112,7 +112,7 @@ def _update_game_file(file):
 	
 	run_here.end()
 	
-	_update_pack_game_version()
+	update_pack_game_version()
 
 def del_cache():
 	cache_paths = ['cache/html', 'cache/data']
@@ -135,19 +135,19 @@ def check_update():
 		print('	Checking update...')
 
 	pack_game_version = get_pack_game_version()
-	latest_game_version = _get_latest_game_version()
+	latest_game_version = get_latest_game_version()
 	
 	if pack_game_version != latest_game_version:
 		if config['show_update_message']:
 			print('	Update founded, updating...')
 		
-		_update_game_file('strings')
-		_update_game_file('game')
+		update_game_file('strings')
+		update_game_file('game')
 		
 		if config['show_update_message']:
 			print(f'	Update completed, from v{pack_game_version} update to v{latest_game_version}')
 		
-		_update_pack_game_version()
+		update_pack_game_version()
 	else:
 		if config['show_update_message']:
 			print(f'	Local game files have been updated to latest version(v{get_pack_game_version()})')
