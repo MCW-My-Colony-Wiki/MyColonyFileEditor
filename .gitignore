@@ -2,4 +2,4 @@
 *.json
 *.html
 main.py
-/_last_version_content
+_last_version_content/
