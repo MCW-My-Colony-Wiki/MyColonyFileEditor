@@ -1,3 +1,5 @@
 *.pyc
 *.json
 *.html
+main.py
+_last_version_content/*.*

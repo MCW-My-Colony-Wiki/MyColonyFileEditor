@@ -165,3 +165,6 @@ def unit_check(file_name, part_name, unit_name, **options):
 		return False
 	
 	return True
+
+class check():
+	pass

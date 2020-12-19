@@ -22,15 +22,24 @@ def get_part_list(file_name, **options):
 	'''
 	valid_option = {'check_file': True}
 	
+	#Basic check
 	if not check.option_check(options, valid_option):
 		return
 	
+	#Filling options
 	options = fill_dic(valid_option, options)
 	
+	#Optional check
 	if options['check_file'] and not check.file_check(file_name):
 		return
 	
-	part_list = getattr(data, file_name).parts
+	#Try get part_list
+	try:
+		part_list = getattr(data, file_name).parts
+	#AttributeError -> invalid file_name -> check file_name for print error message
+	except AttributeError:
+		check.file_check(file_name)
+		return
 	
 	return part_list
 
@@ -43,8 +52,6 @@ def get_part(file_name, part_name, **options):
 		check_file(Type: bool, Default: True): If True, will check file_name before try to get part
 		check_part(Type: bool, Default: True): If True, will check part_name before try to get part
 	'''
-	import json
-	
 	valid_option = {'check_file': True, 'check_part': True}
 	
 	#Basic check
@@ -67,22 +74,23 @@ def get_part(file_name, part_name, **options):
 	if type(part_name) == int:
 		part_name = part_list[part_name - 1]
 	
-	#Get part_data
-	try: #Get from cache
-		run_here.start()
-		with open(f'cache/data/{file_name}_{part_name}.json', encoding = 'UTF-8') as part_file:
-			part_data = json.load(part_file)
-		run_here.end()
-	except FileNotFoundError: #Get from file.data and create cache
+	#Try get file
+	try:
 		file = getattr(data, file_name)
-		part_data = file.data[part_name]
-		
-		run_here.start()
-		with open(f'cache/data/{file_name}_{part_name}.json', 'w', encoding = 'UTF-8') as part_file:
-			json.dump(part_data, part_file, indent = '\t', ensure_ascii = False)
-		run_here.end()
+	#AttributeError -> invalid file_name -> check file_name for print error message
+	except AttributeError:
+		check.file_check(file_name)
+		return
 	
-	#create Part
+	#Try get part_data
+	try:
+		part_data = file.data[part_name]
+	#KeyError -> invalid part_name -> check part_name for print error message
+	except KeyError:
+		check.part_check(file_name, part_name, check_file = False)
+		return
+	
+	#Create Part
 	part = Part(file_name, part_name, part_data)
 	
 	return part

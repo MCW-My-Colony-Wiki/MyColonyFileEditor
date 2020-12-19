@@ -69,7 +69,10 @@ def get_unit(file_name, part_name, unit_name, **options):
 	try:
 		run_here.start()
 		with open(f'', encoding = 'UTF-8') as unit_file:
-			
+			pass
+		run_here.end()
+	except:
+		pass
 
 def get_units():
 	pass

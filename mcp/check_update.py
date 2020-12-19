@@ -7,8 +7,9 @@ import time
 from . import core
 from .config import _load_config, config
 
-run_here = core.run_here()
+run_here = core.run_here.run_here
 
+@run_here
 def get_pack_game_version():
 	run_here.start()
 	
@@ -51,12 +52,9 @@ def get_latest_game_version():
 		if adjust_config == True:
 			config(timeout = timeout)
 		
-		run_here.start()
-		
 		with open(f'cache/html/{str(bs(page.text, "lxml").title)[7:-8]}.html', 'w') as f:
 			f.write(page.text)
 		
-		run_here.end()
 		return html
 	
 	try:
@@ -71,7 +69,9 @@ def get_latest_game_version():
 		
 		run_here.end()
 	except FileNotFoundError:
+		run_here.start()
 		html = update_cache()
+		run_here.end()
 	
 	download_options = html.find_all(class_ = 'appDownloadItem')
 	for option in download_options:

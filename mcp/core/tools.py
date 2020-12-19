@@ -12,9 +12,9 @@ class run_here():
 	def __init__(self):
 		self.orig_path = None
 	
-	def start(self):
+	def start(self, position = 1):
 		self.orig_path = os.getcwd()
-		caller_path = os.path.split(inspect.stack()[1].filename)[0]
+		caller_path = os.path.split(inspect.stack()[position].filename)[0]
 		os.chdir(caller_path)
 	
 	def end(self):
@@ -24,6 +24,13 @@ class run_here():
 	def path(self, path):
 		self.orig_path = os.getcwd()
 		os.chdir(path)
+	
+	def run_here(self, func):
+		def run_here_func():
+			self.start(2)
+			func()
+			self.end()
+		return run_here_func
 
 def converter(path):
 	with open(path, 'r', encoding = 'UTF-8') as game_file:
