@@ -10,7 +10,7 @@ from ..operate.unit import get_unit
 
 __all__ = [
 	'check_update',
-    'update'
+	'update'
 ]
 
 config_data = load_config()
