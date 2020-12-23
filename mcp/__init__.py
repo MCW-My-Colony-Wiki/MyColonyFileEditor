@@ -1,5 +1,6 @@
-from .config import _load_config, config
-from .check_update import check_update, del_cache
+from .internal_procedures import *
+from .config import load_config, config
+from .operate.package import *
 
 __all__ = [
 	'config',
@@ -7,9 +8,9 @@ __all__ = [
 	'del_cache'
 ]
 
-_config_data = _load_config()
-if _config_data['check_update']:
-	check_update()
+config_data = load_config()
+del load_config
 
-from .get_part import *
-from .get_unit import *
+if config_data['check_update']:
+	check_update()
+del config_data
