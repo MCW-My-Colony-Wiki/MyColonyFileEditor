@@ -9,7 +9,8 @@ from ..operate.package import load_config
 from ..operate.unit import get_unit
 
 __all__ = [
-	'check_update'
+	'check_update',
+    'update'
 ]
 
 config_data = load_config()
