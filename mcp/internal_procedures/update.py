@@ -4,9 +4,9 @@ import json
 import os
 import time
 
-from ..core import run_here
-from ..config import load_config
-from ..operate import get_unit
+from ..tools import run_here
+from ..operate.package import load_config
+from ..operate.unit import get_unit
 
 __all__ = [
 	'check_update'
@@ -28,7 +28,7 @@ def get_latest_game_version():
 		timeout = config_data['timeout']
 		html = None
 		
-		while html == None:
+		while html is None:
 			try:
 				page = requests.get('https://market.ape-apps.com/my-colony.html', timeout = timeout)
 				if page.status_code == requests.codes.ok:
@@ -97,7 +97,7 @@ def update_game_file(file):
 	update_pack_game_version()
 
 def check_update():
-	if config_data['show_update_message']:
+	if config_data['show_update_process']:
 		print('mcp check_update process')
 		print('	Checking update...')
 
@@ -105,18 +105,18 @@ def check_update():
 	latest_game_version = get_latest_game_version()
 	
 	if pack_game_version != latest_game_version:
-		if config_data['show_update_message']:
+		if config_data['show_update_process']:
 			print('	Update founded, updating...')
 		
 		update_game_file('strings')
 		update_game_file('game')
 		
-		if config_data['show_update_message']:
+		if config_data['show_update_process']:
 			print(f'	Update completed, from v{pack_game_version} update to v{latest_game_version}')
 		
 		update_pack_game_version()
 	else:
-		if config_data['show_update_message']:
+		if config_data['show_update_process']:
 			print(f'	Local game files have been updated to latest version(v{get_pack_game_version()})')
 
 def update():

@@ -1,7 +1,7 @@
-from ..core import run_here, fill_dic
+from ..check import file_check, option_check, part_check
+from ..tools import run_here, fill_dic
 from ..source import data
 from ..category import Part
-from ..core import check
 
 __all__ = [
 	'get_part_list',
@@ -101,7 +101,7 @@ def get_parts(file, part_names: list, **options):
 	for part_name in part_names:
 		part = get_part(file, part_name, options)
 		
-		if part == None:
+		if part is None:
 			return
 
 		part_list.append(part)

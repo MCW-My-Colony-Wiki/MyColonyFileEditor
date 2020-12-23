@@ -1,5 +1,5 @@
 from ..category import Game_file
-from ..core import run_here, converter
+from ..tools import run_here, format_game_file
 
 __all__ = [
 	'game',
@@ -9,7 +9,7 @@ __all__ = [
 @run_here
 def get_file_data(file):
 	with open(f'{file}.js', 'r', encoding = 'UTF-8') as game_file:
-		data = converter(game_file.read())
+		data = format_game_file(game_file.read())
 		return data
 
 game = Game_file('game', get_file_data('game'))

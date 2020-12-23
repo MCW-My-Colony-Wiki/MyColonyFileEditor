@@ -1,5 +1,5 @@
 import os
-from ..core import run_here
+from ..tools import run_here, rel_chdir
 
 __all__ = [
 	'check_source'
@@ -7,5 +7,4 @@ __all__ = [
 
 @run_here
 def check_source():
-	if not os.path.exists('source'):
-		os.mkdir('source')
+	rel_chdir('../source')
