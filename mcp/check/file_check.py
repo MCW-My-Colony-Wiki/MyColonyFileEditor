@@ -11,10 +11,10 @@ def file_check(file_name):
 
 	#Error information
 	if type(file_name) != str:
-	    print('Only accept str file name')
-	    return False
+		print('Only accept str file name')
+		return False
 	if file_name not in file_list:
-	    print(f'Invalid file name: {file_name}')
-	    return False
+		print(f'Invalid file name: {file_name}')
+		return False
 	
 	return True

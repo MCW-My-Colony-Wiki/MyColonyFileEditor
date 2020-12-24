@@ -1,12 +1,10 @@
 #Self check
 from .internal_procedures.self_check import check_source
 check_source()
-del check_source
 
 #Create config_data
 from .operate.config import load_config
 config_data = load_config()
-del load_config
 
 #Check update
 from .internal_procedures.update import check_update
@@ -14,9 +12,11 @@ from .internal_procedures.update import check_update
 if config_data['auto_update'] or config_data['check_update']:
 	check_update(config_data['auto_update'])
 
-del config_data
+#Delete not use/internal method
+#del category, check, check_source, config_data, internal_procedures, load_config, source, tools
+del check_source, config_data, load_config
 
-#Import package operate
+#Import config operate
 from .operate.config import config
 
 __all__ = [
