@@ -26,10 +26,9 @@ def get_page(url):
 			return
 	
 	if page.status_code == requests.codes.ok:
-		return page
-	else:
-		print(f'{url} is not work')
-		return
+	    return page
+	print(f'{url} is not work')
+	return
 
 def get_latest_version_number():
 	#Try get page
@@ -62,16 +61,15 @@ def download_source(file, *, version = get_latest_version_number()):
 	if version is not None:
 		page = get_page(f'https://www.apewebapps.com/apps/my-colony/{version}/{file}.js')
 		page.encoding = 'UTF-8'
-		
+
 		if page is not None:
-			os.chdir('..')
+		    os.chdir('..')
 		
-			with open(f'source/{file}.js', 'w', encoding = 'UTF-8') as source_file:
-				source_file.write(page.text)
-			
-			return True
-		else:
-			return False
+		    with open(f'source/{file}.js', 'w', encoding = 'UTF-8') as source_file:
+		        source_file.write(page.text)
+    
+		    return True
+		return False
 	else:
 		return False
 

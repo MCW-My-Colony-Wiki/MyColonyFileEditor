@@ -105,8 +105,7 @@ def get_parts(file, part_names: list, **options):
 			return
 
 		part_list.append(part)
-	
+
 	if len(part_list) == 1:
-		return part_list[0]
-	else:
-		return part_list
+	    return part_list[0]
+	return part_list
