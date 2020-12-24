@@ -25,10 +25,10 @@ def check_update(auto_update = False):
 			
 			while True:
 				if do_update in true_like:
-				    update()
-				    break
+					update()
+					break
 				if do_update in false_like:
-				    break
+					break
 				do_update = input(f'Invalid input "{do_update}", please enter again.(Y/N)\n> ')
 		else:
 			update()
