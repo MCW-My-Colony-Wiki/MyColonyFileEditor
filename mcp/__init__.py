@@ -1,16 +1,11 @@
-#Check indispensable file
+#Self check
 from .internal_procedures.self_check import check_source
-
-if not check_source():
-	raise Warning('Missing file! Please try to reinstall this package to solve this problem')
-
+check_source()
 del check_source
 
 #Create config_data
-from .config import load_config
-
+from ..operate.config import load_config
 config_data = load_config()
-
 del load_config
 
 #Check update

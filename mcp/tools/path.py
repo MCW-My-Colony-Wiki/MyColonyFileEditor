@@ -31,5 +31,5 @@ def rel_chdir(dire):
 		while len(dire[0])-1:
 			dire[0] = dire[0][1:]
 			os.chdir('..')
-		print(os.getcwd())
+		
 		os.chdir(dire[1])
