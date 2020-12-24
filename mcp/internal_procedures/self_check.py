@@ -61,6 +61,7 @@ def download_source(file, *, version = get_latest_version_number()):
 	
 	if version is not None:
 		page = get_page(f'https://www.apewebapps.com/apps/my-colony/{version}/{file}.js')
+		page.encoding = 'UTF-8'
 		
 		if page is not None:
 			os.chdir('..')

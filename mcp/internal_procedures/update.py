@@ -1,38 +1,37 @@
-from .get_version import get_pack_game_version, get_latest_game_version
-from .update_file import update_game_file, update_pack_game_version
+from .self_check import get_latest_version_number, download_source
 
-from ..operate.package import load_config
-from ..operate.unit import get_unit
+from ..operate.package import get_package_source_version
+from ..operate.config import load_config
 
 __all__ = [
-	'check_update',
-	'update'
+	'check_update'
 ]
 
 config_data = load_config()
 
-def check_update():
-	if config_data['show_update_process']:
-		print('mcp check_update process')
-		print('	Checking update...')
-
-	pack_game_version = get_pack_game_version()
-	latest_game_version = get_latest_game_version()
+def check_update(auto_update = False):
+	def update():
+		download_source('game')
+		download_source('strings')
 	
-	if pack_game_version != latest_game_version:
-		if config_data['show_update_process']:
-			print('	Update founded, updating...')
-		
-		update_game_file('strings')
-		update_game_file('game')
-		
-		if config_data['show_update_process']:
-			print(f'	Update completed, from v{pack_game_version} update to v{latest_game_version}')
-		
-		update_pack_game_version()
+	latest_version_number = get_latest_version_number()
+	package_source_version = get_package_source_version()
+	
+	if latest_version_number != package_source_version:
+		if auto_update == False:
+			do_update = input('The package source files have been updated. Do you want to update?(Y/N)\n> ')
+			true_like = ['Y', 'y']
+			false_like = ['N', 'n']
+			
+			while True:
+				if do_update in true_like:
+					update()
+					break
+				elif do_update in false_like:
+					break
+				else:
+					do_update = input(f'Invalid input "{do_update}", please enter again.(Y/N)\n> ')
+		else:
+			update()
 	else:
-		if config_data['show_update_process']:
-			print(f'	Local game files have been updated to latest version(v{get_pack_game_version()})')
-
-def update():.
-	pass
+		pass

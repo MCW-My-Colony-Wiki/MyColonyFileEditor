@@ -1,7 +1,6 @@
 {
-	"check_file": true,
+	"self_check": true,
 	"check_update": true,
 	"auto_update": true,
-	"show_update_process": true,
 	"timeout": 1
 }
