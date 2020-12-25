@@ -2,9 +2,8 @@ import os
 import requests
 from bs4 import BeautifulSoup as bs
 
-from ..tools import run_here
+from ..tools.path import run_here
 from ..operate.config import load_config
-from ..check.file_check import *
 
 __all__ = [
 	'check_source'
@@ -55,9 +54,6 @@ def get_latest_version_number():
 	
 @run_here
 def download_source(file, *, version = get_latest_version_number()):
-	if not file_check(file):
-		return
-
 	if version is not None:
 		page = get_page(f'https://www.apewebapps.com/apps/my-colony/{version}/{file}.js')
 		page.encoding = 'UTF-8'

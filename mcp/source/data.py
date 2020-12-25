@@ -1,5 +1,8 @@
-from ..category import Game_file
-from ..tools import run_here, format_game_file
+import json
+
+from ..classes import SourceFile
+from ..tools.path import run_here
+from ..tools.data import format_source_data
 
 __all__ = [
 	'game',
@@ -7,10 +10,11 @@ __all__ = [
 ]
 
 @run_here
-def get_file_data(file):
+def get_source_data(file):
 	with open(f'{file}.js', 'r', encoding = 'UTF-8') as game_file:
-		data = format_game_file(game_file.read())
+		data = format_source_data(game_file.read())
+		data = json.loads(data, encoding = 'UTF-8')
 		return data
 
-game = Game_file('game', get_file_data('game'))
-strings = Game_file('strings', get_file_data('strings'))
+game = SourceFile('game', get_source_data('game'))
+strings = SourceFile('strings', get_source_data('strings'))

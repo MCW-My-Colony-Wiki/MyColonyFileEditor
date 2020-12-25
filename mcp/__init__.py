@@ -13,13 +13,13 @@ if config_data['auto_update'] or config_data['check_update']:
 	check_update(config_data['auto_update'])
 
 #Delete not use/internal method
-#del category, check, check_source, config_data, internal_procedures, load_config, source, tools
 del check_source, config_data, load_config
 
-#Import config operate
+from . import operate
 from .operate.config import config
 
 __all__ = [
 	'check_update',
-	'config'
+	'config',
+	'operate'
 ]

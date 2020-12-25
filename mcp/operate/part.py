@@ -1,46 +1,12 @@
-from ..check import file_check, option_check, part_check
-from ..tools import run_here, fill_dic
 from ..source import data
-from ..category import Part
+from .exceptions import InvalidFileError
 
 __all__ = [
-	'get_part_list',
 	'get_part',
 	'get_parts'
 ]
 
-def get_part_list(file_name, **options):
-	'''
-	If file_name is invalid, return None
-	Else, return part_list
-	
-	options:
-		check_file(Type: bool, Default: True): If True, will check file before try to get part list
-	'''
-	valid_option = {'check_file': True}
-	
-	#Basic check
-	if not check.option_check(options, valid_option):
-		return
-	
-	#Filling options
-	options = fill_dic(valid_option, options)
-	
-	#Optional check
-	if options['check_file'] and not check.file_check(file_name):
-		return
-	
-	#Try get part_list
-	try:
-		part_list = getattr(data, file_name).parts
-	#AttributeError -> invalid file_name -> check file_name for print error message
-	except AttributeError:
-		check.file_check(file_name)
-		return
-	
-	return part_list
-
-def get_part(file_name, part_name, **options):
+def get_part(file, part_name, **options):
 	'''
 	If part_name is invalid, return None
 	Else, return Part

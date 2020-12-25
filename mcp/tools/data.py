@@ -1,10 +1,10 @@
 import re
 
 __all__ = [
-	'format_game_file'
+	'format_source_data'
 ]
 
-def format_game_file(data):
+def format_source_data(data):
 	data = re.sub(r', *//.*', ',', data) #Remove comment
 	data = re.sub(r': *\.', ': 0.', data) #Remove float-like(.1, .2, ...)
 	data = data.strip() #Remove space at start and end
