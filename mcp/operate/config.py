@@ -11,6 +11,11 @@ __all__ = [
 @run_here
 def load_config(paras = None):
 	os.chdir('..')
+	config_path = 'config.json'
+	if not os.path.exists(config_path):
+		from shutil import copyfile
+		copyfile('default_config.json', 'config.json')
+	
 	with open('config.json', encoding = 'UTF-8') as config_file:
 		config_data = json.load(config_file)
 
@@ -33,25 +38,42 @@ def load_config(paras = None):
 
 	print(f'Invalid para: "{paras}"')
 
-def config(**para):
+def config(**paras):
 	config_data = load_config()
-	print(*config_data)
-	#valid_para = dict(zip(*config_data))
-
-	if len(para) == 0:
-		return json.dumps(config_data, sort_key = True, indent = '\t')
-	if option_check(para, config_data, type_check = True):
-		@run_here
-		def update_config():
-			#Generate changelog and update config_data
-			for k, v in para.items():
-				if config_data[k] != v:
-					changelog = changelog + f'\n\t"{k}": {config_data[k]} -> {v}'
-					config_data[k] = v
-			
-				#Save config_data to config.json
-			os.chdir('..')
-			with open('config.json', 'w', encoding = 'UTF-8') as config_file:
-				json.dump(config_data, config_file, indent = '\t')
+	
+	def update_config_data():
+		changelog = 'change log:'
 		
-			return changelog
+		for k, v in paras.items():
+			#Check exists
+			if k not in config_data:
+				raise KeyError(f"Invalid key '{k}'")
+			#Check type
+			if type(v) != type(config_data[k]):
+				raise TypeError(f"value of '{k}' must be {config_data[k].__class__.__name__}, not {v.__class__.__name__}")
+			#Check value, if not same, update changelog and config_data
+			if config_data[k] != v:
+				changelog = changelog + f"\n  '{k}': {config_data[k]} -> {v}"
+				config_data[k] = v
+		
+		if changelog == 'change log:':
+			changelog = changelog + '\n  Nothing changed'
+		
+		return changelog
+		
+	@run_here
+	def save_config():
+		os.chdir('..')
+		with open('config.json', 'w', encoding = 'UTF-8') as config_file:
+			json.dump(config_data, config_file, indent = '\t')
+	
+	if len(paras) == 0:
+		print(json.dumps(config_data, sort_keys = True, indent = '\t'))
+		return
+	
+	changelog = update_config_data()
+	
+	if changelog:
+		print(changelog)
+	
+	save_config()

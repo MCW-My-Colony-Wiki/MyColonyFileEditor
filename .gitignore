@@ -1,5 +1,5 @@
 *.pyc
 *.html
 *.js
-main.py
+__main__.py
 _last_version_content/

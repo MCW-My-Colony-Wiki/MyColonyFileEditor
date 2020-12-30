@@ -9,10 +9,11 @@ __all__ = [
 def run_here(func):
 	#Get orig_path, func_path
 	orig_path = os.getcwd()
-	func_frame = inspect.currentframe().f_back
-	func_frame_info = inspect.getframeinfo(func_frame)
-	func_path = os.path.split(func_frame_info.filename)[0]
-	del func_frame, func_frame_info
+	func_path = os.path.split(
+		inspect.getframeinfo(
+			inspect.currentframe().f_back
+		).filename
+	)[0]
 	
 	def run_here_func(*args):
 		#Move to the location of the function

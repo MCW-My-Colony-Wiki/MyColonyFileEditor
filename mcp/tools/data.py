@@ -1,7 +1,14 @@
 import re
+import json
+from os import chdir
+
+from .path import run_here
 
 __all__ = [
-	'format_source_data'
+	'format_source_data',
+	'source_data',
+	'class_name',
+	'format_name'
 ]
 
 def format_source_data(data):
@@ -17,3 +24,21 @@ def format_source_data(data):
 	data = data.replace(list_data[-1], '}') #Let last line turn into "}"
 	
 	return data
+
+@run_here
+def source_data(file):
+	chdir('..')
+	with open(f'source/{file}.js', 'r', encoding = 'UTF-8') as game_file:
+		data = format_source_data(game_file.read())
+		data = json.loads(data, encoding = 'UTF-8')
+		return data
+
+def class_name(object):
+	if object == type:
+		return type.__class__.__name__
+	else:
+		return object().__class__.__name__
+
+def format_name(name):
+	name = re.sub(r"[\s']", '-', name)
+	return name

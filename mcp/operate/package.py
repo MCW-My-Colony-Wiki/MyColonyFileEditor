@@ -1,7 +1,7 @@
 import os
 
 from ..tools.path import run_here
-from ..source.data import game
+from ..source import Source
 
 __all__ = [
 	'get_package_source_version'
@@ -9,5 +9,4 @@ __all__ = [
 
 @run_here
 def get_package_source_version():
-	os.chdir('..')
-	return game.data['meta']['buildVersion']
+	return Source('game').data['meta']['buildVersion']

@@ -1,18 +1,20 @@
+import importlib
 import os
-import requests
-from bs4 import BeautifulSoup as bs
+
+requests = importlib.import_module('requests')
+bs = importlib.import_module('bs4').BeautifulSoup
 
 from ..tools.path import run_here
 from ..operate.config import load_config
 
 __all__ = [
-	'check_source'
+	
 ]
 
-config_data = load_config()
+timeout = load_config('timeout')
 
 def get_page(url):
-	timeout = config_data['timeout']
+	global timeout
 	
 	while True:
 		try:
@@ -51,19 +53,19 @@ def get_latest_version_number():
 		return
 	
 	return latest_version_number
-	
+
 @run_here
 def download_source(file, *, version = get_latest_version_number()):
 	if version is not None:
 		page = get_page(f'https://www.apewebapps.com/apps/my-colony/{version}/{file}.js')
 		page.encoding = 'UTF-8'
-
+		
 		if page is not None:
 			os.chdir('..')
 		
 			with open(f'source/{file}.js', 'w', encoding = 'UTF-8') as source_file:
 				source_file.write(page.text)
-	
+		
 			return True
 		return False
 	return False
@@ -71,7 +73,12 @@ def download_source(file, *, version = get_latest_version_number()):
 @run_here
 def check_source():
 	os.chdir('..')
-	listdir = os.listdir('source')
+	source = 'source'
+	
+	if not os.path.exists(source):
+		os.mkdir(source)
+	
+	listdir = os.listdir(source)
 	
 	if 'game.js' not in listdir or 'strings.js' not in listdir:
 		print('Missing source file, trying to download...')
@@ -83,3 +90,5 @@ def check_source():
 			download_source('strings')
 		
 		print('Download completed')
+
+check_source()
