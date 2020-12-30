@@ -33,11 +33,10 @@ def source_data(file):
 		data = json.loads(data, encoding = 'UTF-8')
 		return data
 
-def class_name(object):
-	if object == type:
+def class_name(obj):
+	if obj is type:
 		return type.__class__.__name__
-	else:
-		return object().__class__.__name__
+	return obj().__class__.__name__
 
 def format_name(name):
 	name = re.sub(r"[\s']", '-', name)

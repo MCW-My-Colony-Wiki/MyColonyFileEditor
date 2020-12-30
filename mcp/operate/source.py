@@ -1,4 +1,4 @@
-from ..source import *
+from ..source import Source, Category
 
 __all__ = [
 	'getsource',
@@ -14,7 +14,7 @@ def getsource(source):
 def getcat(source, category):
 	'''
 	'''
-	if type(source) == str:
+	if type(source) is str:
 		source = getsource(source)
 	
 	return Category(source, category)

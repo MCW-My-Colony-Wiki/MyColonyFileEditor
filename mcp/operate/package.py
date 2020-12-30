@@ -1,5 +1,3 @@
-import os
-
 from ..tools.path import run_here
 from ..source import Source
 

@@ -21,7 +21,7 @@ def load_config(paras = None):
 
 	if paras is None:
 		return config_data
-	if type(paras) == list:
+	if type(paras) is list:
 		values = []
 	
 		for para in paras:

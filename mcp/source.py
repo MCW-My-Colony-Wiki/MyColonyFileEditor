@@ -1,6 +1,4 @@
-import json
-
-from .exceptions import *
+from .exceptions import raise_TpE, raise_ISE, raise_ICE, raise_IUE
 from .tools.data import source_data, format_name
 
 __all__ = [
@@ -59,7 +57,7 @@ class ListUnit:
 			raise_TpE('category', Category)
 		
 		#data check
-		if type(data) == list:
+		if type(data) is list:
 			#get unit(class)
 			try:
 				unit_class = eval(cat_to_unit_dict[category.name])
@@ -127,19 +125,17 @@ class Source:
 		if num_of_cat < len(self.categories):
 			cat_name = self.categories[num_of_cat]
 			return Category(self, cat_name)
-		else:
-			raise StopIteration
+		raise StopIteration
 	
 	def __contains__(self, category):
-		if isinstance(category, Category) or type(category) == str:
+		if isinstance(category, Category) or type(category) is str:
 			try:
 				category = category.name
 			except AttributeError:
 				pass
 			
 			return category in self.data
-		else:
-			return False
+		return False
 	
 	def __str__(self):
 		return str(self.categories)
@@ -170,7 +166,7 @@ class Category:
 		data = source.data[name]
 		
 		#list or list of dict
-		if type(data) == list:
+		if type(data) is list:
 			#list of dict
 			try:
 				data = ListUnit(self, data)
@@ -208,7 +204,7 @@ class Unit:
 		else:
 			raise_TpE('category', Category)
 		
-		if type(data) == dict:
+		if type(data) is dict:
 			self.data = data
 		else:
 			raise_TpE('data', dict)

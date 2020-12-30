@@ -18,7 +18,7 @@ def check_update(auto_update = False):
 	package_source_version = get_package_source_version()
 	
 	if latest_version_number != package_source_version:
-		if auto_update == False:
+		if not auto_update:
 			do_update = input('The package source files have been updated. Do you want to update?(Y/N)\n> ')
 			true_like = ['Y', 'y']
 			false_like = ['N', 'n']

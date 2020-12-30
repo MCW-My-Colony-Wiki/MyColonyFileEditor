@@ -21,9 +21,9 @@ class InvalidUnitError(LookupError):
 
 def raise_TpE(para, corr):
 	def raise_error(parameter, correct_type):
-		if correct_type == type or type(correct_type) == type:
+		if correct_type is type or type(correct_type) is type:
 			correct_type = class_name(correct_type)
-		elif type(correct_type) == list:
+		elif type(correct_type) is list:
 			#check items in list
 			for type_ in correct_type:
 				if type(type_) != type and type_ != type:
