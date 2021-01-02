@@ -26,7 +26,7 @@ def raise_TpE(para, corr):
 		elif type(corr) is list:
 			#check items in list
 			for type_ in corr:
-				if type(type_) != type and type_ != type and type_ != None:
+				if type(type_) != type and type_ != type and type_ is not None:
 					raise_error(type_, type)
 			
 			if len(corr) < 2:

@@ -1,12 +1,10 @@
 import importlib
 import os
-import time
 
 requests = importlib.import_module('requests')
 bs = importlib.import_module('bs4').BeautifulSoup
 
 from ..tools.path import run_here
-from ..tools.other import used_time
 from ..operate.config import load_config
 
 __all__ = [

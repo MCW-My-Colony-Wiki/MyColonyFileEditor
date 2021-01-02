@@ -1,4 +1,4 @@
-from .exceptions import raise_TpE, raise_ISE, raise_ICE, raise_IUE
+from .exceptions import raise_TpE, raise_ISE, raise_ICE
 from .tools.data import source_data, format_name
 
 __all__ = [
@@ -92,7 +92,7 @@ If you are a developer, please check source/game.js changes""")
 		raise StopIteration
 	
 	def __contains__(self, unit):
-		if isinstance(unit, Unit) or type(unit) == str:
+		if isinstance(unit, Unit) or type(unit) is str:
 			try:
 				unit = unit.name
 			except AttributeError:
@@ -206,7 +206,7 @@ class Category:
 				data = ListUnit(self, data)
 				self.units = data.units
 			#list of str
-			except TypeError as e:
+			except TypeError: #as e:
 				#print(e)
 				pass
 		#dict

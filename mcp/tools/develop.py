@@ -35,8 +35,8 @@ def unit_attr_analyzer(source, category):
 		if 'may_missing' in dir():
 			return all_attr, may_missing
 		return all_attr
-	else:
-		raise_TpE('category.data', ListUnit)
+	
+	raise_TpE('category.data', ListUnit)
 
 def unit_init_generater(source, category):
 	unit_attrs = unit_attr_analyzer(source, category)

@@ -1,6 +1,6 @@
 import os
 
-from ..tools.path import run_here, rela_chdir
+from ..tools.path import run_here
 
 __all__ = [
 	'del_pycache'

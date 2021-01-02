@@ -38,7 +38,7 @@ def getunit(para0, para1, para2 = None):
 		cat = getcat(para0, para1)
 		unit = para2
 		return get_unit()
-	elif not para2:
+	if not para2:
 		cat = para0
 		unit = para1
 		
