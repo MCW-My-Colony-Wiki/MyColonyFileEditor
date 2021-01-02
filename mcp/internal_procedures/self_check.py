@@ -5,14 +5,17 @@ requests = importlib.import_module('requests')
 bs = importlib.import_module('bs4').BeautifulSoup
 
 from ..tools.path import run_here
-from ..operate.config import load_config
+from ..config import load_config
 
 __all__ = [
 	
 ]
 
+timeout = load_config('timeout')
+
 def get_page(url):
-	timeout = load_config('timeout')
+	global timeout
+	
 	while True:
 		try:
 			page = requests.get(url, timeout = timeout)
@@ -59,7 +62,6 @@ def download_source(file, *, version = get_latest_version_number()):
 		
 		if page is not None:
 			os.chdir('..')
-		
 			with open(f'source/{file}.js', 'w', encoding = 'UTF-8') as source_file:
 				source_file.write(page.text)
 		
@@ -79,13 +81,10 @@ def check_source():
 	
 	if 'game.js' not in listdir or 'strings.js' not in listdir:
 		print('Missing source file, trying to download...')
+		return False
+	return True
 
-		if 'game.js' not in listdir:
-			download_source('game')
-		
-		if 'strings.js' not in listdir:
-			download_source('strings')
-		
-		print('Download completed')
-
-check_source()
+if not check_source():
+	download_source('game')
+	download_source('strings')
+	print('Download complete')

@@ -1,7 +1,7 @@
 import os
 import json
 
-from ..tools.path import run_here
+from .tools.path import run_here
 
 __all__ = [
 	'load_config',
@@ -10,7 +10,6 @@ __all__ = [
 
 @run_here
 def load_config(paras = None):
-	os.chdir('..')
 	config_path = 'config.json'
 	if not os.path.exists(config_path):
 		from shutil import copyfile

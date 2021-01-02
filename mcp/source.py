@@ -1,3 +1,5 @@
+import os
+
 from .exceptions import raise_TpE, raise_ISE, raise_ICE
 from .tools.data import source_data, format_name
 

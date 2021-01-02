@@ -1,7 +1,7 @@
 from .self_check import get_latest_version_number, download_source
 
 from ..operate.package import get_package_source_version
-from ..operate.config import load_config
+from ..config import load_config
 
 __all__ = [
 	'check_update'

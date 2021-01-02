@@ -1,9 +1,9 @@
-#Load config
-from .operate.config import load_config, config
-config_data = load_config()
-
 #Self check
 from .internal_procedures.self_check import *
+
+#Load config
+from .config import load_config, config
+config_data = load_config()
 
 #Check update
 if config_data['auto_update'] or config_data['check_update']:
