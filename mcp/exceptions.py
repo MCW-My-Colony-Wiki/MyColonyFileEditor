@@ -20,24 +20,24 @@ class InvalidUnitError(LookupError):
 	pass
 
 def raise_TpE(para, corr):
-	def raise_error(parameter, correct_type):
-		if correct_type is type or type(correct_type) is type:
-			correct_type = class_name(correct_type)
-		elif type(correct_type) is list:
+	def raise_error(para, corr):
+		if corr is type or corr is None or type(corr) is type:
+			corr = class_name(corr)
+		elif type(corr) is list:
 			#check items in list
-			for type_ in correct_type:
-				if type(type_) != type and type_ != type:
+			for type_ in corr:
+				if type(type_) != type and type_ != type and type_ != None:
 					raise_error(type_, type)
 			
-			if len(correct_type) < 2:
-				correct_type = class_name(correct_type[0])
-			elif len(correct_type) == 2:
-				correct_type = f"'{class_name(correct_type[0])}' or '{class_name(correct_type[1])}'"
-			elif len(correct_type) > 2:
-				correct_type = str([class_name(type_) for type_ in correct_type[:-1]])[1:-1] + f" or '{class_name(correct_type[-1])}'"
+			if len(corr) < 2:
+				corr = class_name(corr[0])
+			elif len(corr) == 2:
+				corr = f"'{class_name(corr[0])}' or '{class_name(corr[1])}'"
+			elif len(corr) > 2:
+				corr = str([class_name(type_) for type_ in corr[:-1]])[1:-1] + f" or '{class_name(corr[-1])}'"
 		
-		raise TypeError(f"the '{parameter}' must be {correct_type}, not {class_name(parameter)}")
-	
+		raise TypeError(f"the '{para}' must be {corr}, not {class_name(para)}")
+		
 	#Self check
 	if type(para) != str:
 		raise_error('para', str)

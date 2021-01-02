@@ -1,5 +1,8 @@
+import time
+
 __all__ = [
-	'fill_dic'
+	'fill_dic',
+	'used_time'
 ]
 
 def fill_dic(from_dic, to_dic, *, except_key = None):
@@ -17,3 +20,13 @@ def fill_dic(from_dic, to_dic, *, except_key = None):
 				in_dic(k, from_dic, to_dic)
 	
 	return to_dic
+
+def used_time(func):
+	def warper(*args, **kargs):
+		start = time.time()
+		func_return = func(*args, **kargs)
+		end = time.time()
+		used = end - start
+		print(f"function '{func.__name__}' took about {round(used, 5)} seconds")
+		return func_return
+	return warper

@@ -18,7 +18,7 @@ __all__ = [
 	'check_update',
 	'config',
 	'operate',
-	'getsource'
+	'getsource',
 	'getcat',
 	'getunit'
 ]
