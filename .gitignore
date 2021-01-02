@@ -3,3 +3,4 @@
 *.js
 __main__.py
 _last_version_content/
+config.json
