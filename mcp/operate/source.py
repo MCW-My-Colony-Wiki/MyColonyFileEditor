@@ -45,5 +45,4 @@ def getunit(para0, para1, para2 = None):
 		if isinstance(cat, Category):
 			return get_unit()
 		raise TypeError('if the last parameter is None, first parameter must be Category')
-	else:
-		raise_TpE('last parameter', [None, str])
+	raise_TpE('last parameter', [None, str])
