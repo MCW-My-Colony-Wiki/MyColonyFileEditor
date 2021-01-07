@@ -2,6 +2,12 @@
 整理My Colony的遊戲資料，並提供方便獲取資料的功能
 **目前尚不支援 My Colony 2**
 
+# To do
+1. - [ ] 下載遊戲資料時，立即對其進行format處理並儲存，以提高後續載入速度
+2. - [ ] 修復當多一個@run_here function在另一個@run_here function內使用時，導致的工作路徑錯誤
+3. - [ ] 完成operate.develop中的檔案列表產生器及其應用
+4. 待定
+
 ## package
 
 初次使用package時，會自動下載最新版的遊戲檔案(v1.11.0版約3MB)
