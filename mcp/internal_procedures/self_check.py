@@ -5,6 +5,7 @@ requests = importlib.import_module('requests')
 bs = importlib.import_module('bs4').BeautifulSoup
 
 from ..tools.path import run_here
+from ..tools.data import format_source_data
 from ..config import load_config
 
 __all__ = [
@@ -62,8 +63,8 @@ def download_source(file, *, version = get_latest_version_number()):
 		
 		if page is not None:
 			os.chdir('..')
-			with open(f'source/{file}.js', 'w', encoding = 'UTF-8') as source_file:
-				source_file.write(page.text)
+			with open(f'source/{file}.json', 'w', encoding = 'UTF-8') as source_file:
+				source_file.write(format_source_data(page.text))
 		
 			return True
 		return False
@@ -79,7 +80,7 @@ def check_source():
 	
 	listdir = os.listdir(source)
 	
-	if 'game.js' not in listdir or 'strings.js' not in listdir:
+	if 'game.json' not in listdir or 'strings.json' not in listdir:
 		print('Missing source file, trying to download...')
 		return False
 	return True

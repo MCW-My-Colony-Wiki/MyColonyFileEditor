@@ -28,10 +28,8 @@ def format_source_data(data):
 @run_here
 def source_data(file):
 	chdir('..')
-	with open(f'source/{file}.js', 'r', encoding = 'UTF-8') as game_file:
-		data = format_source_data(game_file.read())
-		data = json.loads(data, encoding = 'UTF-8')
-		return data
+	with open(f'source/{file}.json', 'r', encoding = 'UTF-8') as source_file:
+		return json.loads(source_file.read(), encoding = 'UTF-8')
 
 def class_name(obj):
 	if obj is type:
