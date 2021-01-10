@@ -1,3 +1,5 @@
+[![DeepSource](https://deepsource.io/gh/Euxcbsks/mcp.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/Euxcbsks/mcp/?ref=repository-badge)
+
 # mcp - My Colony Python
 整理My Colony的遊戲資料，並提供方便獲取資料的功能
 **目前尚不支援 My Colony 2**
