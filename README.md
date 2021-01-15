@@ -6,7 +6,7 @@
 
 # To do
 1. - [x] 下載遊戲資料時，立即對其進行format處理並儲存，以提高後續載入速度
-2. - [ ] 修復當一個@run_here function在另一個@run_here function內使用時，導致的工作路徑錯誤
+2. - [x] 修復當一個@run_here function在另一個@run_here function內使用時，導致的工作路徑錯誤
 3. - [ ] 完成operate.develop中的檔案列表產生器及其應用
 4. 待定
 

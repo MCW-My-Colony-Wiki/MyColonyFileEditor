@@ -27,7 +27,7 @@ def load_config(paras = None):
 			try:
 				value = config_data[para]
 				values.append(value)
-			except ValueError:
+			except KeyError:
 				print(f'Invalid para: "{para}"')
 				return
 		
@@ -65,7 +65,7 @@ def config(**paras):
 		os.chdir('..')
 		with open('config.json', 'w', encoding = 'UTF-8') as config_file:
 			json.dump(config_data, config_file, indent = '\t')
-	
+		
 	if len(paras) == 0:
 		print(json.dumps(config_data, sort_keys = True, indent = '\t'))
 		return
