@@ -1,47 +1,33 @@
 import os
+from glob import glob
+from shutil import rmtree
 
 from ..tools.path import run_here
 
 __all__ = [
-	'del_pycache'
+	'del_pyc'
 ]
 
-def deep_file_finder(path, targets):
-	'''
-	path:
-		Type: PathLike
-		Description: Path for start search
-	targets:
-		Type: File name, folder name or a list of both
-		Description: Names ending with slash(/) will be judged as folder names.
-			Else will be judged as file names
-	'''
-	listdir = os.listdir(path)
-	target_list = []
+@run_here
+def del_pyc():
+	def folder_finder(path, target):
+		targets = []
+		
+		for folder in os.listdir(path):
+			if os.path.isdir(folder) and folder == target:
+				targets.append(os.path.abspath(f'{path}/{folder}'))
+			elif os.path.isdir(folder):
+				sub_folder_targets = folder_finder(folder, target)
+				
+				if sub_folder_targets != []:
+					targets = targets + sub_folder_targets
+		
+		return targets
 	
-	if type(targets) != list:
-		targets = list(targets)
+	os.chdir('..')
+	
+	targets = folder_finder('.', '__pycache__')
 	
 	for target in targets:
-		#For folder
-		if target.endswith('/'):
-			target = target[:-1]
-			
-			for folder in listdir:
-				if folder == target:
-					target_list.append(os.path.abspath(folder))
-				
-				if os.path.isdir(folder):
-					target_list.append(deep_file_finder(folder, f'{target}/'))
-		#For file
-		else:
-			pass
-	return target_list
-
-@run_here
-def del_pycache():
-	os.chdir('..')
-	target_list = deep_file_finder(os.getcwd(), '__pycache__/')
-	
-	for target in target_list:
-		pass
+		rmtree(target)
+		print(f"Deleted folder '{target}'")
