@@ -1,5 +1,4 @@
 import os
-from glob import glob
 from shutil import rmtree
 
 from ..tools.path import run_here

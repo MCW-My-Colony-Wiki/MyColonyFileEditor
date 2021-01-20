@@ -10,46 +10,46 @@ def unit_attr_analyzer(source, category):
 	cat = getcat(source, category)
 	
 	if type(cat.data) is ListUnit:
-		keys_tuple_set = set([tuple(unit.data.keys()) for unit in cat])
+		#sorted() -> Avoid errors caused by different element positions
+		#tuple() -> Let keys(list) hashable
+		#set() -> Eliminate duplicate keys
+		keys_list = list(set(tuple(sorted(unit.keys)) for unit in cat))
 		
-		#create all_attr, sort it at the same time
-		all_attr = []
-		
-		for keys_tuple in keys_tuple_set:
-			for key in keys_tuple:
-				if key not in all_attr:
-					all_attr.append(key)
-		
-		#generate may_missing if needed it
-		keys_set_list = [set(keys_tuple) for keys_tuple in keys_tuple_set]
-		keys_set_list_len = len(keys_set_list)
-		
-		if keys_set_list_len > 1:
-			may_missing = []
+		if len(keys_list) > 1:
+			may_missing = [key for keys_set in [set(keys_list[i]) ^ set(keys_list[i + 1]) for i in range(len(keys_list) - 1)] for key in keys_set]
+			all_attr = []
 			
-			for i in range(keys_set_list_len - 1):
-				may_missing.append(*(keys_set_list[i] ^ keys_set_list[i + 1]))
+			#Generate all_attr that not content key in may_missing
+			for unit in cat:
+				for key in unit.keys:
+					if key not in all_attr and key not in may_missing:
+						all_attr.append(key)
 			
-			may_missing = list(set(may_missing))
-		
-		if 'may_missing' in dir():
+			#Add may_missing key into all_attr, with correct position
+			for unit in cat:
+				for i in range(len(unit.keys) - 1):
+					key = unit.keys[i]
+					
+					if key in may_missing and key not in all_attr:
+						#Get previous key of current key
+						#Get position of previous key in all_attr
+						position = all_attr.index(unit.keys[i - 1]) + 1
+						all_attr.insert(position, key)
+			
 			return all_attr, may_missing
-		return all_attr
-	
+		return cat[0].keys
 	raise_TpE('category.data', ListUnit)
 
 def unit_init_generater(source, category):
 	unit_attrs = unit_attr_analyzer(source, category)
-	init_settings = ''
 	
 	if type(unit_attrs) is tuple:
 		all_attr = unit_attrs[0]
 		may_missing = unit_attrs[1]
-		init_setting_list = [f"\n		self.{attr} = self.data['{attr}']" if attr not in may_missing else f"\n		self.{attr} = self.data['{attr}'] if '{attr}' in self.data else None" for attr in all_attr]
+		init_settings = [f"\n		self.{attr} = self.data['{attr}']" if attr not in may_missing else f"\n		self.{attr} = self.data['{attr}'] if '{attr}' in self.data else None" for attr in all_attr]
 	else:
-		init_setting_list = [f"\n		self.{attr} = self.data['{attr}']" for attr in unit_attrs]
+		init_settings = [f"\n		self.{attr} = self.data['{attr}']" for attr in unit_attrs]
 	
-	for init_setting in init_setting_list:
-		init_settings = init_settings + init_setting
+	init_settings = str().join(setting for setting in init_settings)[1:]
 	
-	return init_settings.strip()
+	return init_settings

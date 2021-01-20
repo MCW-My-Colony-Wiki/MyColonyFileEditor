@@ -254,6 +254,7 @@ class Unit:
 		
 		if type(data) is dict:
 			self.data = data
+			self.keys = list(data.keys())
 		else:
 			raise_TpE('data', dict)
 	

@@ -12,10 +12,8 @@ __all__ = [
 	
 ]
 
-timeout = load_config('timeout')
-
 def get_page(url):
-	global timeout
+	timeout = load_config('timeout')
 	
 	while True:
 		try:
