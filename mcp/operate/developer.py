@@ -7,7 +7,6 @@ __all__ = [
 	'del_pyc'
 ]
 
-@run_here
 def del_pyc():
 	def folder_finder(path, target):
 		targets = []
@@ -23,10 +22,13 @@ def del_pyc():
 		
 		return targets
 	
-	os.chdir('..')
+	def delete_pyc():
+		os.chdir('..')
+		targets = folder_finder('.', '__pycache__')
 	
-	targets = folder_finder('.', '__pycache__')
+		for target in targets:
+			rmtree(target)
+			print(f"Deleted folder '{target}'")
 	
-	for target in targets:
-		rmtree(target)
-		print(f"Deleted folder '{target}'")
+	with run_here(delete_pyc):
+		pass

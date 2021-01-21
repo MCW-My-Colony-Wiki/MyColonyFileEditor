@@ -1,48 +1,26 @@
 import os
-import inspect
+from inspect import currentframe
 
 __all__ = [
 	'run_here',
 	'rela_chdir'
 ]
 
-def run_here(func):
-	def get_outer_func_path(frame):
-		func_path = os.path.split(
-			inspect.getframeinfo(
-				frame.f_back
-			).filename
-		)[0]
+class run_here():
+	def __init__(self, func):
+		if func.__class__.__name__ != "function":
+			raise TypeError(f"the 'func' must be function, not '{func.__class__.__name__}'")
 		
-		return func_path
+		self.func = func
+		self.orig_path = os.getcwd()
+		self.func_path = os.path.split(currentframe().f_back.f_globals['__file__'])[0]
 	
-	#Get orig_path of outermost run_here_func
-	orig_path = os.getcwd()
+	def __enter__(self):
+		os.chdir(self.func_path)
+		return self.func()
 	
-	#Get func_path and allow use at module __main__
-	if func.__module__ != '__main__':
-		func_path = get_outer_func_path(inspect.currentframe())
-	else:
-		func_path = orig_path
-	
-	def run_here_func(*args):
-		#Move to the location of the function
-		os.chdir(func_path)
-		
-		#Get function return value
-		func_return = func(*args)
-		
-		#Restore work directory
-		outer_func = inspect.currentframe().f_back.f_back
-		outer_func_info = inspect.getframeinfo(outer_func)
-		
-		if outer_func_info.function != 'run_here_func':
-			os.chdir(orig_path)
-		else:
-			os.chdir(get_outer_func_path(outer_func))
-		
-		return func_return
-	return run_here_func
+	def __exit__(self, exc_type, exc_value, exc_trackback):
+		os.chdir(self.orig_path)
 
 def rela_chdir(path):
 	'''

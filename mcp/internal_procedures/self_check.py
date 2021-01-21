@@ -53,22 +53,24 @@ def get_latest_version_number():
 	
 	return latest_version_number
 
-@run_here
 def download_source(file, *, version = get_latest_version_number()):
 	if version is not None:
 		page = get_page(f'https://www.apewebapps.com/apps/my-colony/{version}/{file}.js')
 		page.encoding = 'UTF-8'
 		
-		if page is not None:
+		def write_source():
 			os.chdir('..')
 			with open(f'source/{file}.json', 'w', encoding = 'UTF-8') as source_file:
 				source_file.write(format_source_data(page.text))
 		
+		if page is not None:
+			with run_here(write_source):
+				pass
+			
 			return True
 		return False
 	return False
 
-@run_here
 def check_source():
 	os.chdir('..')
 	source = 'source'
@@ -83,7 +85,8 @@ def check_source():
 		return False
 	return True
 
-if not check_source():
-	download_source('game')
-	download_source('strings')
-	print('Download complete')
+with run_here(check_source) as exist:
+	if not exist:
+		download_source('game')
+		download_source('strings')
+		print('Download complete')

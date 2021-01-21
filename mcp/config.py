@@ -2,40 +2,52 @@ import os
 import json
 
 from .tools.path import run_here
+from .tools.data import class_name
 
 __all__ = [
 	'load_config',
 	'config'
 ]
 
-@run_here
 def load_config(paras = None):
-	config_path = 'config.json'
-	if not os.path.exists(config_path):
-		from shutil import copyfile
-		copyfile('default_config.json', 'config.json')
+	def file_check():
+		config_path = 'config.json'
+		
+		if not os.path.exists(config_path):
+			from shutil import copyfile
+			copyfile('default_config.json', 'config.json')
 	
-	with open('config.json', encoding = 'UTF-8') as config_file:
-		config_data = json.load(config_file)
-
+	def load():
+		with open('config.json', encoding = 'UTF-8') as config_file:
+			config_data = json.load(config_file)
+		
+		return config_data
+	
+	def get_value(key):
+		try:
+			return config_data[key]
+		except:
+			raise ValueError(f"Invalid para: {key}")
+	
+	with run_here(file_check):
+		pass
+	
+	with run_here(load) as data:
+		config_data = data
+	
 	if paras is None:
 		return config_data
-	if type(paras) is list:
+	if type(paras) is str:
+		return get_value(paras)
+	if type(paras) is list or type(paras) is tuple:
 		values = []
-	
+		
 		for para in paras:
-			try:
-				value = config_data[para]
-				values.append(value)
-			except KeyError:
-				print(f'Invalid para: "{para}"')
-				return
+			values.append(get_value(para))
 		
 		return values
-	if paras in config_data.keys():
-		return config_data[paras]
-
-	print(f'Invalid para: "{paras}"')
+	
+	raise TypeError(f"the paras must be list, tuple or str, not {class_name(paras)}")
 
 def config(**paras):
 	config_data = load_config()

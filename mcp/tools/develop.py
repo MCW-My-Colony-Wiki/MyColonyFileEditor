@@ -13,9 +13,10 @@ def unit_attr_analyzer(source, category):
 		#sorted() -> Avoid errors caused by different element positions
 		#tuple() -> Let keys(list) hashable
 		#set() -> Eliminate duplicate keys
-		keys_list = list(set(tuple(sorted(unit.keys)) for unit in cat))
+		keys_set = set(tuple(sorted(unit.keys)) for unit in cat)
 		
-		if len(keys_list) > 1:
+		if len(keys_set) > 1:
+			keys_list = list(keys_set)
 			may_missing = [key for keys_set in [set(keys_list[i]) ^ set(keys_list[i + 1]) for i in range(len(keys_list) - 1)] for key in keys_set]
 			all_attr = []
 			

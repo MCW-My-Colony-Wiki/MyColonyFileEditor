@@ -25,11 +25,14 @@ def format_source_data(data):
 	
 	return data
 
-@run_here
 def source_data(file):
-	chdir('..')
-	with open(f'source/{file}.json', 'r', encoding = 'UTF-8') as source_file:
-		return json.loads(source_file.read(), encoding = 'UTF-8')
+	def get_data():
+		chdir('..')
+		with open(f'source/{file}.json', 'r', encoding = 'UTF-8') as source_file:
+			return json.loads(source_file.read(), encoding = 'UTF-8')
+	
+	with run_here(get_data) as data:
+		return data
 
 def class_name(obj):
 	if obj is type:
