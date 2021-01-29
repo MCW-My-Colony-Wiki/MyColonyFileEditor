@@ -26,7 +26,7 @@ def load_config(paras = None):
 	def get_value(key):
 		try:
 			return config_data[key]
-		except:
+		except KeyError:
 			raise ValueError(f"Invalid para: {key}")
 	
 	with run_here(file_check):

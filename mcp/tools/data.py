@@ -37,7 +37,9 @@ def source_data(file):
 def class_name(obj):
 	if obj is type:
 		return type.__class__.__name__
-	return obj().__class__.__name__
+	if obj in __builtins__:
+		return obj().__class__.__name__
+	return obj.__class__.__name__
 
 def format_name(name):
 	name = re.sub(r"[\s']", '-', name)
