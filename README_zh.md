@@ -1,10 +1,9 @@
 [![DeepSource](https://deepsource.io/gh/MCW-My-Colony-Wiki/mcp.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/MCW-My-Colony-Wiki/mcp/?ref=repository-badge)
 
-[中文README](README_zh.md)
+[English README](README.md)
 
 # mcp - My Colony Python
-
-
+整理My Colony的遊戲資料，並提供方便獲取資料的功能
 **目前尚不支援 My Colony 2**
 
 # To do

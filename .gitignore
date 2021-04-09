@@ -3,6 +3,8 @@
 
 mcp/source/
 mcp/test/
+.env/
+.vscode/
 
 __main__.py
 config.json
