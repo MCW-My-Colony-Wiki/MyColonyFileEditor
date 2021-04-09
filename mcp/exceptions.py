@@ -1,4 +1,4 @@
-from .tools.info import class_name
+from .tools.info.class_name import class_name
 
 __all__ = [
 	'InvalidSourceError',

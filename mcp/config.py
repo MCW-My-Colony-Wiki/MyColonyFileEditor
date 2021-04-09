@@ -4,7 +4,7 @@ import importlib
 from os.path import exists
 
 from .tools.path.run_here import run_here
-from .tools.info import class_name
+from .tools.info.class_name import class_name
 
 __all__ = [
 	'load_config',
@@ -62,12 +62,14 @@ def config(**paras):
 				raise TypeError(f"value of '{k}' must be '{class_name(config_data[k])}', not '{class_name(v)}'")
 		
 		def check_value():
-			if k in limit_value and v not in valid_value[k]:
+			if k in valid_value and v not in valid_value[k]:
 				raise ValueError(f"Invalid value '{v}' of '{k}'\n  valid value: {str(valid_value[k])[1:-1]}")
 		
 		#update config data
 		def update_config_data():
 			if v != config_data[k]:
+				nonlocal changelog
+
 				changelog += f"\n  '{k}': {config_data[k]} -> {v}"
 				config_data[k] = v
 		
