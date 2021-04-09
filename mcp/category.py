@@ -4,6 +4,8 @@ from .source_file import raw_source_data
 from .exceptions import raise_TpE, raise_ICE
 
 from .tools.data.asgmt_brench import asgmt_brench
+from .tools.info.class_name import class_name
+from .tools.data.format_attr import format_name
 
 __all__ = [
 	"ListUnit",
@@ -63,7 +65,7 @@ class ListUnit:
 		raise StopIteration
 	
 	def __contains__(self, unit):
-		if isinstance(unit, Unit) or type(unit) is str:
+		if class_name(unit) in {"Unit", "str"}:
 			try:
 				unit = unit.name
 			except AttributeError:
@@ -118,7 +120,7 @@ class Category:
 			raise StopIteration
 	
 	def __contains__(self, item):
-		if isinstance(item, Unit) or type(item) is str:
+		if class_name(item) in {"Unit", "str"}:
 			return item in self.data
 		return False
 	

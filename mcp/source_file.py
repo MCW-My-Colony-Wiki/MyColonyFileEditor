@@ -6,8 +6,8 @@ __all__ = [
 ]
 
 source_files = [
-	'game',
-	'strings'
+    'game',
+    'strings'
 ]
 
 #Pre-created source data
