@@ -1,18 +1,11 @@
+from .category import Category
 from .exceptions import raise_TpE, raise_ISE
-
-from .tools.data.source_data import source_data
+from .source_file import source_files, raw_source_data
+from .tools.info.class_name import class_name
 
 __all__ = [
 	'Source'
 ]
-
-source_files = [
-	'game',
-	'strings'
-]
-
-#Pre-created source file data
-source_file_data = {name: source_data(name) for name in source_files}
 
 class Source:
 	"""Content all data in specified source file
@@ -46,17 +39,16 @@ class Source:
 			raise_ISE(name)
 		
 		self.name = name
-		self.data = source_file_data[name]
-		self.categories = list(self.data.keys())
+		self.raw_data = raw_source_data[name]
+		self.categories = [Category(self, category) for category in self.raw_data.keys()]
 	
-	def __getitem__(self, num_of_cat):
-		if num_of_cat < len(self.categories):
-			cat_name = self.categories[num_of_cat]
-			return Category(self, cat_name)
+	def __getitem__(self, cat_num):
+		if cat_num < len(self.categories):
+			return self.categories[cat_num]
 		raise StopIteration
 	
 	def __contains__(self, category):
-		if isinstance(category, Category) or type(category) is str:
+		if class_name(category) in {'Category', 'str'}:
 			try:
 				category = category.name
 			except AttributeError:
@@ -69,7 +61,7 @@ class Source:
 		return str(self.categories)
 	
 	def __repr__(self):
-		self.__str__()
+		return str(self.categories)
 	
 	def __len__(self):
 		return len(self.categories)

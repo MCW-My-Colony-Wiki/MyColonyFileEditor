@@ -21,11 +21,11 @@ __all__ = [
 class Unit:
 	def __init__(self, category, data):
 		if not category.__class__.__name__ == "Category":
-			raise_TpE('category', Category)
+			raise_TpE('category', 'Category')
 		
-		if not type(data) == dict:
+		if not type(data) is dict:
 			raise_TpE('data', dict)
-			
+
 		self.source = category.source
 		self.category = category
 		self.data = data

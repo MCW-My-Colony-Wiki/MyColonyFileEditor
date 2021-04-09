@@ -1,9 +1,14 @@
-from .source import Source
 from .units import VideoTutorial, Soundtrack, Map, Race, Civilization, Tile, Resource, Utility, Occupation, Terrain, Technology, Building, Vehicle
+from .source_file import raw_source_data
 
 from .exceptions import raise_TpE, raise_ICE
 
 from .tools.data.asgmt_brench import asgmt_brench
+
+__all__ = [
+	"ListUnit",
+	"Category"
+]
 
 list_unit_cat = {
 	'videoTutorials': VideoTutorial,
@@ -27,12 +32,21 @@ class ListUnit:
 		if type(data) is not list:
 			raise_TpE('data', list)
 		
-		self.category = eval(asgmt_brench(category, 'category', {"str": "Category('game', category)", "Category": "category"}))
-		
-		#set self.data
+		self.category = eval(asgmt_brench(category, 'category', {
+			"str": "Category('game', category)",
+			"Category": "category"
+		}))
+
+		#set self.data, self.units
 		try:
 			unit_class = list_unit_cat[self.category.name]
-			self.data = [unit_class(category, item) for item in data]
+
+			if unit_class:
+				self.data = [unit_class(category, item) for item in data]
+				self.units = [unit.name if hasattr(unit, 'name') else unit.title for unit in self.data]
+			else:
+				self.data = data
+				self.units = data
 		except KeyError:
 			#list
 			for item in data:
@@ -42,7 +56,6 @@ class ListUnit:
 			#list of dict that not add to list_unit_cat
 			raise Warning(f"Category '{category.name}' is unavailable, please report this issue on github(https://github.com/Euxcbsks/mcp/issues)")
 		
-		self.units = [unit.name if hasattr(unit, 'name') else unit.title for unit in self.data]
 	
 	def __getitem__(self, num_of_unit):
 		if num_of_unit < len(self.data):
@@ -72,21 +85,26 @@ class Category:
 	'''
 	'''
 	def __init__(self, source, name):
-		source = eval(asgmt_brench(source, 'source', {'str': "Source(source)", 'Source': "source"}))
+		source_data = eval(asgmt_brench(source, 'source', {'str': "raw_source_data[source]", 'Source': "source.raw_data"}))
 		
-		if name not in source.categories:
+		if name not in source_data:
 			raise_ICE(name)
 
-		data = source.data[name]
+		data = source_data[name]
 		self.name = name
-		self.source = source
 		self.raw_data = data
+		self.source = source
 
 		try:
+			#ListUnit
 			self.data = ListUnit(self, data)
 			self.units = self.data.units
 		except TypeError:
-			self.keys = list(data.keys())
+			#dict or list
+			exec(asgmt_brench(data, '', {
+				"dict": "self.keys = list(data.keys())",
+				"list": "self.element = data"
+			}))
 	
 	def __getitem__(self, num_of_item):
 		if num_of_item < len(self.data):

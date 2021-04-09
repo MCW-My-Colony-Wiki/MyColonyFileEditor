@@ -4,7 +4,6 @@ __all__ = [
 	'InvalidSourceError',
 	'InvalidCateError',
 	'InvalidUnitError',
-	'PageNotWorkError'
 	'raise_TpE',
 	'raise_ISE',
 	'raise_ICE',
@@ -43,7 +42,7 @@ def raise_TpE(para, *valid_types):
 		raise_error('para', str)
 	
 	#raise it as return
-	raise_error(para, *types)
+	raise_error(para, *valid_types)
 
 def raise_ISE(name):
 	raise InvalidSourceError(f"invalid source file '{name}'")

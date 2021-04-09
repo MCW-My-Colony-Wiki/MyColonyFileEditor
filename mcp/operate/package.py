@@ -1,8 +1,8 @@
-from ..source import Source
+from ..source_file import raw_source_data
 
 __all__ = [
 	'package_source_version'
 ]
 
 def package_source_version():
-	return Source('game').data['meta']['buildVersion']
+	return raw_source_data['game']['meta']['buildVersion']
