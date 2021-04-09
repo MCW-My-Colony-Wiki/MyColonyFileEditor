@@ -48,9 +48,9 @@ def config(**paras):
 		all_checks = {"type_check": True, "value_check": True}
 
 		#auto generate
-		need_check = {check: paras.get(check, all_checks[check]) for check in all_checks}
+		set_check = {check: paras.get(check, all_checks[check]) for check in all_checks}
 		check_to_func = {check: locals()[f"check_{check.split('_')[0]}"] for check in all_checks}
-		checks = [check_to_func[k] for k, v in need_check if v]
+		need_check = [check_to_func[k] for k, v in set_check if v]
 		
 		#customize check
 		valid_value = {
@@ -75,12 +75,12 @@ def config(**paras):
 		
 		#update config
 		if checks:
-			for k, v in paras:
-				for func in checks:
-					func()
+			for k, v in paras.items():
+				for check in need_check:
+					check()
 				update_config_data()
 		else:
-			for k, v in paras:
+			for k, v in paras.items():
 				update_config_data()
 		
 		if changelog == 'change log:':
