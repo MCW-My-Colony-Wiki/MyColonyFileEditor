@@ -1,9 +1,10 @@
-from .tools.data import class_name
+from .tools.info import class_name
 
 __all__ = [
 	'InvalidSourceError',
 	'InvalidCateError',
 	'InvalidUnitError',
+	'PageNotWorkError'
 	'raise_TpE',
 	'raise_ISE',
 	'raise_ICE',
@@ -19,48 +20,36 @@ class InvalidCateError(LookupError):
 class InvalidUnitError(LookupError):
 	pass
 
-def raise_TpE(para, corr):
-	def raise_error(para, corr):
-		if corr is type or corr is None or type(corr) is type:
-			corr = class_name(corr)
-		elif type(corr) is list:
-			#check items in list
-			for type_ in corr:
-				if type(type_) != type and type_ != type and type_ is not None:
-					raise_error(type_, type)
-			
-			if len(corr) < 2:
-				corr = class_name(corr[0])
-			elif len(corr) == 2:
-				corr = f"'{class_name(corr[0])}' or '{class_name(corr[1])}'"
-			elif len(corr) > 2:
-				corr = str([class_name(type_) for type_ in corr[:-1]])[1:-1] + f" or '{class_name(corr[-1])}'"
+class PageNotWorkError(ConnectionError):
+	pass
+
+def raise_TpE(para, *valid_types):
+	if not valid_types:
+		raise ValueError("the 'valid_types' can't be None")
+	
+	def raise_error(para, *valid_types):
+		valid_types_len = len(valid_types)
+		valid_types = [f"'{class_name(Type)}'" if type(Type) != str else f"'{Type}'" for Type in valid_types]
 		
-		raise TypeError(f"the '{para}' must be {corr}, not {class_name(para)}")
+		if valid_types_len < 2:
+			valid_types = valid_types[0]
+		elif valid_types_len >= 2:
+			valid_types = ", ".join(valid_types[:-1]) + f' or {valid_types[-1]}'
 		
-	#Self check
+		raise TypeError(f"the '{para}' must be {valid_types}, not {class_name(para)}")
+	
+	#self check
 	if type(para) != str:
 		raise_error('para', str)
 	
-	#corr must == 'type' or list of type(int, float, list, tuple, dict....)
-	if type(corr) != type and type(corr) != list:
-		raise_error('corr', [type, list])
-	
-	#raise as return
-	raise_error(para, corr)
-
-def name_check(name):
-	if type(name) != str:
-		raise_TpE('name', str)
+	#raise it as return
+	raise_error(para, *types)
 
 def raise_ISE(name):
-	name_check(name)
 	raise InvalidSourceError(f"invalid source file '{name}'")
 
 def raise_ICE(name):
-	name_check(name)
 	raise InvalidCateError(f"invalid category '{name}'")
 
 def raise_IUE(name):
-	name_check(name)
 	raise InvalidUnitError(f"invalid unit '{name}'")

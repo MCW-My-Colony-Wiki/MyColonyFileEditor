@@ -1,15 +1,16 @@
 import importlib
 import os
+import json
 
-requests = importlib.import_module('requests')
-bs = importlib.import_module('bs4').BeautifulSoup
+from requests import get, Timeout, URLRequired, codes
 
-from ..tools.path import run_here
-from ..tools.data import format_source_data
+from ..tools.path.run_here import run_here
+from ..tools.data.format_attr import format_source_data
 from ..config import load_config
+from ..exceptions import PageNotWorkError
 
 __all__ = [
-	
+	"check_source"
 ]
 
 def get_page(url):
@@ -17,76 +18,86 @@ def get_page(url):
 	
 	while True:
 		try:
-			page = requests.get(url, timeout = timeout)
+			page = get(url, timeout = timeout)
 			break
-		except requests.Timeout:
+		except Timeout:
 			timeout = timeout + 1
-		except requests.URLRequired:
+		except URLRequired:
 			print(f'Invalid URL: {url}')
 			return
 	
-	if page.status_code == requests.codes.ok:
+	if page.status_code == codes.ok:
 		return page
-	print(f'{url} is not work')
-	return
+	
+	raise PageNotWorkError(f"{url} is not work")
 
-def get_latest_version_number():
+def get_version_number(version_type = 'all'):
 	#Try get page
-	page = get_page('https://market.ape-apps.com/my-colony.html')
-
-	#If page is work, find out latest version number
-	if page is not None:
-		page = bs(page.text, 'lxml')
-		download_options = page.find_all(class_ = 'appDownloadItem')
+	page = get_page('https://coloniae.space/static/json/mycolony_version.json')
+	type_key = {
+		'latest': 'mycolony_version',
+		'stable': 'mycolony_stable_version'
+	}
 	
-		for option in download_options:
-			if 'html5' in str(option):
-				centereds = option.find_all(class_ = 'centered')
-				
-				for centered in centereds:
-					if 'Tag' != centered.contents[0].__class__.__name__:
-						latest_version_number = str(centered.contents[0])
-						break
-				break
+	version_data = json.loads(page.text)
+	
+	if version_type == 'all':
+		version_number = {
+			'latest': version_data['mycolony_version'],
+			'stable': version_data['mycolony_stable_version']
+		}
+	elif version_type in type_key:
+		version_number = version_data[type_key[version_type]]
 	else:
-		return
+		raise ValueError(f"Invalid version_type {version_type}")
 	
-	return latest_version_number
+	return version_number
 
-def download_source(file, *, version = get_latest_version_number()):
-	if version is not None:
+def download_source(*files, version = get_version_number(load_config('update_from'))):
+	downloading = "[mcp][download_source] Downloading '{file}'"
+	
+	@run_here
+	def save_source(file):
 		page = get_page(f'https://www.apewebapps.com/apps/my-colony/{version}/{file}.js')
 		page.encoding = 'UTF-8'
 		
-		def write_source():
-			os.chdir('..')
-			with open(f'source/{file}.json', 'w', encoding = 'UTF-8') as source_file:
-				source_file.write(format_source_data(page.text))
+		os.chdir('..')
 		
-		if page is not None:
-			with run_here(write_source):
-				pass
-			
-			return True
-		return False
-	return False
+		with open(f'source/{file}.json', 'w', encoding = 'UTF-8') as source_file:
+			source_file.write(format_source_data(page.text))
+	
+	if type(files) is tuple:
+		for file in files:
+			print(downloading.format(file = file))
+			save_source(file)
+	elif files is str:
+		print(downloading.format(file - files))
+		save_source(files)
 
+@run_here
 def check_source():
+	source_folder = 'source'
+	creative_source_folder = '[mcp][check_source] Creative source folder'
+	download_start = '[mcp][check_source] Missing source file, trying to download...'
+	download_complete = '[mcp][check_source] Download complete'
+	
 	os.chdir('..')
-	source = 'source'
 	
-	if not os.path.exists(source):
-		os.mkdir(source)
+	if not os.path.exists(source_folder):
+		print(download_start)
+		print(creative_source_folder)
+		os.mkdir(source_folder)
+		download_source('game', 'strings')
+		print(download_complete)
+		return
 	
-	listdir = os.listdir(source)
+	listdir = os.listdir(source_folder)
 	
-	if 'game.json' not in listdir or 'strings.json' not in listdir:
-		print('Missing source file, trying to download...')
-		return False
-	return True
+	if len(listdir) != 2:
+		print(download_start)
+		if 'game.json' not in listdir:
+			download_source('game')
+		if 'strings.json' not in listdir:
+			download_source('strings')
 
-with run_here(check_source) as exist:
-	if not exist:
-		download_source('game')
-		download_source('strings')
-		print('Download complete')
+check_source()

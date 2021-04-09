@@ -1,90 +1,101 @@
-import os
 import json
+import importlib
 
-from .tools.path import run_here
-from .tools.data import class_name
+from os.path import exists
+
+from .tools.path.run_here import run_here
+from .tools.info import class_name
 
 __all__ = [
 	'load_config',
 	'config'
 ]
 
-def load_config(paras = None):
-	def file_check():
-		config_path = 'config.json'
-		
-		if not os.path.exists(config_path):
-			from shutil import copyfile
-			copyfile('default_config.json', 'config.json')
-	
+copyfile = importlib.import_module('shutil').copyfile
+config_file_path = 'config.json'
+default_config_file_path = 'default_config.json'
+
+@run_here
+def config_file_check():
+	'''
+
+	if config.json not exists, generate it
+
+	'''
+	if not exists(config_file_path):
+		copyfile('default_config.json', 'config.json')
+
+def load_config(*paras):
+	@run_here
 	def load():
 		with open('config.json', encoding = 'UTF-8') as config_file:
-			config_data = json.load(config_file)
-		
+			return json.load(config_file)
+	
+	config_data = load()
+	
+	if not paras:
 		return config_data
-	
-	def get_value(key):
-		try:
-			return config_data[key]
-		except KeyError:
-			raise ValueError(f"Invalid para: {key}")
-	
-	with run_here(file_check):
-		pass
-	
-	with run_here(load) as data:
-		config_data = data
-	
-	if paras is None:
-		return config_data
-	if type(paras) is str:
-		return get_value(paras)
-	if type(paras) is list or type(paras) is tuple:
-		values = []
-		
-		for para in paras:
-			values.append(get_value(para))
-		
-		return values
-	
-	raise TypeError(f"the paras must be list, tuple or str, not {class_name(paras)}")
+	if len(paras) == 1:
+		return config_data[paras[0]]
+	return [config_data[para] for para in paras]
 
 def config(**paras):
 	config_data = load_config()
 	
 	def update_config_data():
 		changelog = 'change log:'
+		#all_checks = {"check_name": check_by_default}
+		all_checks = {"type_check": True, "value_check": True}
+
+		#auto generate
+		need_check = {check: paras.get(check, all_checks[check]) for check in all_checks}
+		check_to_func = {check: locals()[f"check_{check.split('_')[0]}"] for check in all_checks}
+		checks = [check_to_func[k] for k, v in need_check if v]
 		
-		for k, v in paras.items():
-			#Check exists
-			if k not in config_data:
-				raise KeyError(f"Invalid key '{k}'")
-			#Check type
+		#customize check
+		valid_value = {
+			'update_from': ['stable', 'latest']
+		}
+		
+		def check_type():
 			if type(v) != type(config_data[k]):
-				raise TypeError(f"value of '{k}' must be {config_data[k].__class__.__name__}, not {v.__class__.__name__}")
-			#Check value, if not same, update changelog and config_data
-			if config_data[k] != v:
-				changelog = changelog + f"\n  '{k}': {config_data[k]} -> {v}"
+				raise TypeError(f"value of '{k}' must be '{class_name(config_data[k])}', not '{class_name(v)}'")
+		
+		def check_value():
+			if k in limit_value and v not in valid_value[k]:
+				raise ValueError(f"Invalid value '{v}' of '{k}'\n  valid value: {str(valid_value[k])[1:-1]}")
+		
+		#update config data
+		def update_config_data():
+			if v != config_data[k]:
+				changelog += f"\n  '{k}': {config_data[k]} -> {v}"
 				config_data[k] = v
 		
+		#update config
+		if checks:
+			for k, v in paras:
+				for func in checks:
+					func()
+				update_config_data()
+		else:
+			for k, v in paras:
+				update_config_data()
+		
 		if changelog == 'change log:':
-			changelog = changelog + '\n  Nothing changed'
+			changelog += '\n  Nothing changed'
 		
 		return changelog
 		
-	@run_here
+	@run_here('..')
 	def save_config():
-		os.chdir('..')
 		with open('config.json', 'w', encoding = 'UTF-8') as config_file:
 			json.dump(config_data, config_file, indent = '\t')
 		
-	if len(paras) == 0:
-		print(json.dumps(config_data, sort_keys = True, indent = '\t'))
-		return
+	if not paras:
+		return json.dumps(config_data, indent = '    ')
 	
-	changelog = update_config_data()
-	
-	if changelog:
-		print(changelog)
+	print(update_config_data())
 	
 	save_config()
+
+config_file_check()
