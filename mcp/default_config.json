@@ -1,5 +1,6 @@
 {
 	"check_update": true,
 	"auto_update": true,
+	"update_from": "stable",
 	"timeout": 1
 }
