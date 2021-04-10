@@ -42,15 +42,10 @@ def load_config(*paras):
 def config(**paras):
 	config_data = load_config()
 	
-	def update_config_data():
+	def update_config_data(config_data):
 		changelog = 'change log:'
 		#all_checks = {"check_name": check_by_default}
 		all_checks = {"type_check": True, "value_check": True}
-
-		#auto generate
-		set_check = {check: paras.get(check, all_checks[check]) for check in all_checks}
-		check_to_func = {check: locals()[f"check_{check.split('_')[0]}"] for check in all_checks}
-		need_check = [check_to_func[k] for k, v in set_check if v]
 		
 		#customize check
 		valid_value = {
@@ -65,39 +60,47 @@ def config(**paras):
 			if k in valid_value and v not in valid_value[k]:
 				raise ValueError(f"Invalid value '{v}' of '{k}'\n  valid value: {str(valid_value[k])[1:-1]}")
 		
-		#update config data
-		def update_config_data():
-			if v != config_data[k]:
-				nonlocal changelog
+		#auto generate
+		set_check = {check: paras.get(check, all_checks[check]) for check in all_checks}
+		local = locals()
+		check_to_func = {check: local[f"check_{check.split('_')[0]}"] for check in all_checks}
+		need_check = [check_to_func[k] for k, v in set_check.items() if v]
 
+		#update config data
+		def update_config_data(changelog, config_data):
+			if v != config_data[k]:
 				changelog += f"\n  '{k}': {config_data[k]} -> {v}"
 				config_data[k] = v
+			
+			return changelog, config_data
 		
 		#update config
-		if checks:
+		if need_check:
 			for k, v in paras.items():
 				for check in need_check:
 					check()
-				update_config_data()
+				changelog, config_data = update_config_data(changelog, config_data)
 		else:
 			for k, v in paras.items():
-				update_config_data()
+				changelog, config_data = update_config_data(changelog, config_data)
 		
 		if changelog == 'change log:':
 			changelog += '\n  Nothing changed'
 		
-		return changelog
+		return config_data, changelog
 		
-	@run_here('..')
-	def save_config():
-		with open('config.json', 'w', encoding = 'UTF-8') as config_file:
+	@run_here
+	def save_config(config_data):
+		with open(config_file_path, 'w', encoding = 'UTF-8') as config_file:
 			json.dump(config_data, config_file, indent = '\t')
 		
 	if not paras:
 		return json.dumps(config_data, indent = '    ')
 	
-	print(update_config_data())
+	config_data, changelog = update_config_data(config_data)
 	
-	save_config()
+	print(changelog)
+	
+	save_config(config_data)
 
 config_file_check()
