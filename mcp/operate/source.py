@@ -23,7 +23,7 @@ def unit(source_name, category, name):
 	if not isinstance(category, Category):
 		category = Category(source_name, category)
 	
-	return eval(asgmt_brench(category.data, '', {
+	return eval(asgmt_brench(category.data, 'type', {
 		"ListUnit": "category[category.units.index(name)]",
 		"dict": "category.data[name]",
 		"list": "category[category.index(name)]"
