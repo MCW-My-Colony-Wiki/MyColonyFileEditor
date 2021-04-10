@@ -4,6 +4,7 @@ __all__ = [
 	'InvalidSourceError',
 	'InvalidCateError',
 	'InvalidUnitError',
+	'PageNotWorkError',
 	'raise_TpE',
 	'raise_ISE',
 	'raise_ICE',
