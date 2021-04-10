@@ -34,10 +34,10 @@ class ListUnit:
 		if type(data) is not list:
 			raise_TpE('data', list)
 		
-		self.category = eval(asgmt_brench(category, 'category', {
+		self.category = eval(asgmt_brench(category, 'type', {
 			"str": "Category('game', category)",
 			"Category": "category"
-		}))
+		}, obj_sig = 'category'))
 
 		#set self.data, self.units
 		try:
@@ -87,7 +87,7 @@ class Category:
 	'''
 	'''
 	def __init__(self, source, name):
-		source_data = eval(asgmt_brench(source, 'source', {'str': "raw_source_data[source]", 'Source': "source.raw_data"}))
+		source_data = eval(asgmt_brench(source, 'type', {'str': "raw_source_data[source]", 'Source': "source.raw_data"}, obj_sig = 'source'))
 		
 		if name not in source_data:
 			raise_ICE(name)
@@ -99,11 +99,10 @@ class Category:
 
 		try:
 			#ListUnit
-			self.data = ListUnit(self, data)
-			self.units = self.data.units
+			self.units = ListUnit(self, data)
 		except TypeError:
 			#dict or list
-			exec(asgmt_brench(data, '', {
+			exec(asgmt_brench(data, 'type', {
 				"dict": "self.keys = list(data.keys())",
 				"list": "self.element = data"
 			}))
@@ -129,7 +128,7 @@ class Category:
 			return str(self.units)
 		if hasattr(self, 'keys'):
 			return str(self.keys)
-		return str(self.data)
+		return str(self.element)
 	
 	def __repr__(self):
 		self.__str__()
