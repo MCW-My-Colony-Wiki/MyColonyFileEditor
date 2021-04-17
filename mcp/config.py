@@ -43,7 +43,7 @@ def config(**paras):
 	config_data = load_config()
 	
 	def update_config_data(config_data):
-		changelog = 'change log:'
+		changes = 'changes'
 		#all_checks = {"check_name": check_by_default}
 		all_checks = {"type_check": True, "value_check": True}
 		
@@ -67,27 +67,27 @@ def config(**paras):
 		need_check = [check_to_func[k] for k, v in set_check.items() if v]
 
 		#update config data
-		def update_config_data(changelog, config_data):
+		def update_config_data(changes, config_data):
 			if v != config_data[k]:
-				changelog += f"\n  '{k}': {config_data[k]} -> {v}"
+				changes += f"\n  '{k}': {config_data[k]} -> {v}"
 				config_data[k] = v
 			
-			return changelog, config_data
+			return changes, config_data
 		
 		#update config
 		if need_check:
 			for k, v in paras.items():
 				for check in need_check:
 					check()
-				changelog, config_data = update_config_data(changelog, config_data)
+				changes, config_data = update_config_data(changes, config_data)
 		else:
 			for k, v in paras.items():
-				changelog, config_data = update_config_data(changelog, config_data)
+				changes, config_data = update_config_data(changes, config_data)
 		
-		if changelog == 'change log:':
-			changelog += '\n  Nothing changed'
+		if changes == 'changes':
+			changes += '\n  Nothing changed'
 		
-		return config_data, changelog
+		return config_data, changes
 		
 	@run_here
 	def save_config(config_data):
@@ -97,9 +97,9 @@ def config(**paras):
 	if not paras:
 		return json.dumps(config_data, indent = '    ')
 	
-	config_data, changelog = update_config_data(config_data)
+	config_data, changes = update_config_data(config_data)
 	
-	print(changelog)
+	print(changes)
 	
 	save_config(config_data)
 
