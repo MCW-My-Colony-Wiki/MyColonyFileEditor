@@ -2,7 +2,7 @@ from .tools.info.class_name import class_name
 
 __all__ = [
 	'InvalidSourceError',
-	'InvalidCateError',
+	'InvalidCategoryError',
 	'InvalidUnitError',
 	'PageNotWorkError',
 	'raise_TpE',
@@ -14,7 +14,7 @@ __all__ = [
 class InvalidSourceError(LookupError):
 	pass
 
-class InvalidCateError(LookupError):
+class InvalidCategoryError(LookupError):
 	pass
 
 class InvalidUnitError(LookupError):
@@ -49,7 +49,7 @@ def raise_ISE(name):
 	raise InvalidSourceError(f"invalid source file '{name}'")
 
 def raise_ICE(name):
-	raise InvalidCateError(f"invalid category '{name}'")
+	raise InvalidCategoryError(f"invalid category '{name}'")
 
 def raise_IUE(name):
 	raise InvalidUnitError(f"invalid unit '{name}'")
