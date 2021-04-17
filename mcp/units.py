@@ -1,4 +1,5 @@
 from .tools.data.format_attr import format_name
+from .tools.data.asgmt_branch import asgmt_branch
 
 from .exceptions import raise_TpE
 
@@ -18,28 +19,25 @@ __all__ = [
 	'Vehicle'
 ]
 
+def attr_branch(obj, branch):
+	dir_obj = set(dir(obj))
+	branch_key = set(branch.keys())
+	
+	return branch[list(dir_obj & branch_key)[0]]
+
 class Unit:
 	def __init__(self, category, data):
-		if not category.__class__.__name__ == "Category":
-			raise_TpE('category', 'Category')
-		
-		if not type(data) is dict:
-			raise_TpE('data', dict)
-
-		self.source = category.source
-		self.category = category
 		self.data = data
-		self.keys = list(data.keys())
+		self.category = category
 	
 	def __str__(self):
-		if hasattr(self, 'name'):
-			return self.name
-		if hasattr(self, 'title'):
-			return self.title
-		return str(self.data)
+		return eval(asgmt_branch(self, attr_branch, {
+			'name': 'self.name',
+			'title': 'self.title',
+		})) 
 	
 	def __repr__(self):
-		self.__str__()
+		return self.__str__()
 
 class VideoTutorial(Unit):
 	def __init__(self, category, data):

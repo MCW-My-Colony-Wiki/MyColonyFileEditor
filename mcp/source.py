@@ -1,6 +1,6 @@
 from .category import Category
-from .exceptions import raise_TpE, raise_ISE
-from .source_file import source_files, raw_source_data
+from .exceptions import raise_TpE, raise_ISE, raise_ICE
+from .source_file import source_files, source_data
 from .tools.info.class_name import class_name
 
 __all__ = [
@@ -33,29 +33,20 @@ class Source:
 	- categories: all category in this source file
 	"""
 	def __init__(self, name):
-		if type(name) != str:
-			raise_TpE('name', str)
 		if name not in source_files:
 			raise_ISE(name)
 		
 		self.name = name
-		self.raw_data = raw_source_data[name]
-		self.categories = [Category(self, category) for category in self.raw_data.keys()]
+		self.data = source_data[name]
+		self.dict = {name: Category(self, name) for name in self.data.keys()}
+		self.list = list(self.dict.values())
+		self.categories = list(self.dict.keys())
 	
-	def __getitem__(self, cat_num):
-		if cat_num < len(self.categories):
-			return self.categories[cat_num]
-		raise StopIteration
-	
-	def __contains__(self, category):
-		if class_name(category) in {'Category', 'str'}:
-			try:
-				category = category.name
-			except AttributeError:
-				pass
-			
-			return category in self.data
-		return False
+	def __getitem__(self, num):
+		try:
+			return self.list[num]
+		except IndexError:
+			raise StopIteration
 	
 	def __str__(self):
 		return str(self.categories)
@@ -65,3 +56,9 @@ class Source:
 	
 	def __len__(self):
 		return len(self.categories)
+	
+	def category(self, name):
+		try:
+			return self.dict[name]
+		except KeyError:
+			raise_ICE(name)

@@ -1,14 +1,13 @@
 from .units import VideoTutorial, Soundtrack, Map, Race, Civilization, Tile, Resource, Utility, Occupation, Terrain, Technology, Building, Vehicle
-from .source_file import raw_source_data
+from .source_file import source_data
 
-from .exceptions import raise_TpE, raise_ICE
+from .exceptions import raise_TpE, raise_ICE, InvalidCategoryError
 
-from .tools.data.asgmt_brench import asgmt_brench
+from .tools.data.asgmt_branch import asgmt_branch
 from .tools.info.class_name import class_name
 from .tools.data.format_attr import format_name
 
 __all__ = [
-	"ListUnit",
 	"Category"
 ]
 
@@ -29,85 +28,110 @@ list_unit_cat = {
 	'demands': None
 }
 
+def attr_branch(obj, branch):
+	dir_obj = set(dir(obj))
+	branch_key = set(branch.keys())
+	
+	return branch[list(dir_obj & branch_key)[0]]
+
 class ListUnit:
+	'''
+	Internal class
+	
+	Argument
+	--------
+	- category
+	  'Category' type, must in list_unit_cat
+	- data
+	  'list' type, list of units data
+	'''
 	def __init__(self, category, data):
+		#use when create instance outside Category
+		if not isinstance(category, Category):
+			raise_TpE('category', Category)
+		
 		if type(data) is not list:
 			raise_TpE('data', list)
 		
-		self.category = eval(asgmt_brench(category, 'type', {
-			"str": "Category('game', category)",
-			"Category": "category"
-		}, obj_sig = 'category'))
-
-		#set self.data, self.units
+		category_name = category.name
+		
+		if category_name not in list_unit_cat:
+			raise InvalidCategoryError(f"[internal] '{category_name}' not in list_unit_cat, if this Error appear after My Colony update, please check the source file")
+		
 		try:
-			unit_class = list_unit_cat[self.category.name]
-
+			#list[Unit]
+			unit_class = list_unit_cat[category_name]
+			
+			#unit_class may be None
 			if unit_class:
-				self.data = [unit_class(category, item) for item in data]
-				self.units = [unit.name if hasattr(unit, 'name') else unit.title for unit in self.data]
+				self.data = data
+				self.list = [unit_class(category, item) for item in data]
+				self.units = [unit.name if hasattr(unit, 'name') else unit.title for unit in self.list]
+				self.dict = dict(zip(self.units, self.list))
 			else:
 				self.data = data
+				self.dict = {num: unit for num, unit in enumerate(data)}
+				self.list = data
 				self.units = data
 		except KeyError:
-			#list
-			for item in data:
-				if type(item) is not dict:
-					raise_TpE('item in data', dict)
-			
-			#list of dict that not add to list_unit_cat
-			raise Warning(f"Category '{category.name}' is unavailable, please report this issue on github(https://github.com/Euxcbsks/mcp/issues)")
-		
+			#list[item]
+			raise_TpE('item in data', dict)
 	
-	def __getitem__(self, num_of_unit):
-		if num_of_unit < len(self.data):
-			return self.data[num_of_unit]
-		raise StopIteration
-	
-	def __contains__(self, unit):
-		if class_name(unit) in {"Unit", "str"}:
-			try:
-				unit = unit.name
-			except AttributeError:
-				pass
-			
-			return format_name(unit) in self.units
-		return False
+	def __getitem__(self, num):
+		try:
+			return self.list[num]
+		except IndexError:
+			raise StopIteration
 	
 	def __str__(self):
-		return self.category.name
+		return str(self.list)
 	
 	def __repr__(self):
-		self.__str__()
+		return str(self.list)
 	
 	def __len__(self):
-		return len(self.units)
+		return len(self.list)
 
 class Category:
 	'''
 	'''
 	def __init__(self, source, name):
-		source_data = eval(asgmt_brench(source, 'type', {'str': "raw_source_data[source]", 'Source': "source.raw_data"}, obj_sig = 'source'))
+		#overwrite source by source data, if type(source) is "Source", it can reduce memory usege
+		source = eval(asgmt_branch(source, 'type', {'str': "source_data[source]", 'Source': "source.data"}, obj_sig = 'source'))
 		
-		if name not in source_data:
+		if name not in source:
 			raise_ICE(name)
-
-		data = source_data[name]
+		
+		#pre-create category data
+		data = source[name]
+		
 		self.name = name
-		self.raw_data = data
-		self.source = source
-
+		self.data = data
+		
 		try:
-			#ListUnit
-			self.units = ListUnit(self, data)
+			#list[Unit]
+			#units may be None
+			list_unit = ListUnit(self, data)
+			branch = {
+				"name": "unit.name",
+				"title": "unit.title"
+			}
+			self.units = list_unit.units
+			self.dict = {eval(asgmt_branch(unit, attr_branch, branch)) if hasattr(unit, 'name') or hasattr(unit, 'title') else num: unit for num, unit in enumerate(list_unit)}
+			self.list = list(self.dict.values())
 		except TypeError:
-			#dict or list
-			exec(asgmt_brench(data, 'type', {
-				"dict": "self.keys = list(data.keys())",
-				"list": "self.element = data"
-			}))
+			#dict
+			self.keys = list(data.keys())
+			self.dict = data
+			self.list = list(data.values())
+		except InvalidCategoryError:
+			#list[item]
+			self.element = data
+			self.dict = {num: item for num, item in enumerate(data)}
+			self.list = data
 	
 	def __getitem__(self, num_of_item):
+		#need support both list and dict
 		if num_of_item < len(self.data):
 			#list of str or list of unit
 			try:
@@ -118,17 +142,12 @@ class Category:
 		else:
 			raise StopIteration
 	
-	def __contains__(self, item):
-		if class_name(item) in {"Unit", "str"}:
-			return item in self.data
-		return False
-	
 	def __str__(self):
-		if hasattr(self, 'units'):
-			return str(self.units)
-		if hasattr(self, 'keys'):
-			return str(self.keys)
-		return str(self.element)
+		return eval(asgmt_branch(self, attr_branch, {
+			'units': 'str(self.units)',
+			'keys': 'str(self.keys)',
+			'element': 'str(self.element)'
+		}))
 	
 	def __repr__(self):
 		self.__str__()
