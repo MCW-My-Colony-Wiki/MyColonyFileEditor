@@ -2,13 +2,13 @@ from json import loads
 from ..path.run_here import run_here
 
 __all__ = [
-	"source_data"
+	"load_source_data"
 ]
 
-def source_data(file):
-	@run_here("...")
-	def get_data():
-		with open(f'source/{file}.json', 'r', encoding = 'UTF-8') as source_file:
-			return loads(source_file.read())
-	
-	return get_data()
+@run_here("...")
+def read_source_file(file):
+	with open(f'source/{file}.json', 'r', encoding = 'UTF-8') as source_file:
+		return source_file.read()
+
+def load_source_data(file):
+	return loads(read_source_file(file))
