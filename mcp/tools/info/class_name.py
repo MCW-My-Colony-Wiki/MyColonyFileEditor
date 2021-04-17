@@ -3,11 +3,6 @@ __all__ = [
 ]
 
 def class_name(obj):
-	#type
-	if obj is type:
-		return obj.__class__.__name__
-	#str, list, tuple, dict, ......
-	if type(obj) is type:
-		return obj().__class__.__name__
-	#custom class
+	if obj in {str, int, float, list, dict, set, tuple}:
+		return obj.__name__
 	return obj.__class__.__name__
