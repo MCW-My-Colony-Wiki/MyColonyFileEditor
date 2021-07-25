@@ -1,10 +1,9 @@
 *.pyc
 *.html
 
-mcp/source/
-mcp/test/
-.env/
+.venv/
 .vscode/
+mcp/cache/
 
 __main__.py
-config.json
+config.ini
