@@ -1,156 +1,96 @@
-from .units import VideoTutorial, Soundtrack, Map, Race, Civilization, Tile, Resource, Utility, Occupation, Terrain, Technology, Building, Vehicle
-from .source_file import source_data
+from .base import DictBase, ListBase
+from .categorybase import CategoryBase
+from .exceptions import InvalidUnit
+from .unit import DictUnit, ListUnit
 
-from .exceptions import raise_TpE, raise_ICE, InvalidCategoryError
-
-from .tools.data.asgmt_branch import asgmt_branch
-from .tools.info.class_name import class_name
-from .tools.data.format_attr import format_name
-
-__all__ = [
-	"Category"
-]
-
-list_unit_cat = {
-	'videoTutorials': VideoTutorial,
-	'soundtrack': Soundtrack,
-	'mapTypes': Map,
-	'races': Race,
-	'civilizations': Civilization,
-	'tiles': Tile,
-	'resources': Resource,
-	'utilities': Utility,
-	'occupations': Occupation,
-	'terrains': Terrain,
-	'technology': Technology,
-	'buildings': Building,
-	'vehicles': Vehicle,
-	'demands': None
+type_to_unit = {
+	dict: DictUnit,
+	list: ListUnit
 }
 
-def attr_branch(obj, branch):
-	dir_obj = set(dir(obj))
-	branch_key = set(branch.keys())
+class DictCategory(DictBase, CategoryBase):
+	def __init__(self, file, name: str, data: dict) -> None:
+		if type(data) is not dict:
+			raise TypeError("DictCategory data must be dictionary, "
+							f"not {data.__class__.__name__}")
+		
+		self.dict = data
+		super().__init__(file, name)
 	
-	return branch[list(dir_obj & branch_key)[0]]
-
-class ListUnit:
-	'''
-	Internal class
-	
-	Argument
-	--------
-	- category
-	  'Category' type, must in list_unit_cat
-	- data
-	  'list' type, list of units data
-	'''
-	def __init__(self, category, data):
-		#use when create instance outside Category
-		if not isinstance(category, Category):
-			raise_TpE('category', Category)
-		
-		if type(data) is not list:
-			raise_TpE('data', list)
-		
-		category_name = category.name
-		
-		if category_name not in list_unit_cat:
-			raise InvalidCategoryError(f"[internal] '{category_name}' not in list_unit_cat, if this Error appear after My Colony update, please check the source file")
-		
+	def __getitem__(self, name):
 		try:
-			#list[Unit]
-			unit_class = list_unit_cat[category_name]
+			unit_data = self.dict[name]
+			unit_data_type = type(unit_data)
 			
-			#unit_class may be None
-			if unit_class:
-				self.data = data
-				self.list = [unit_class(category, item) for item in data]
-				self.units = [unit.name if hasattr(unit, 'name') else unit.title for unit in self.list]
-				self.dict = dict(zip(self.units, self.list))
-			else:
-				self.data = data
-				self.dict = {num: unit for num, unit in enumerate(data)}
-				self.list = data
-				self.units = data
+			if unit_data_type in type_to_unit:
+				return type_to_unit[unit_data_type](self.file, self, unit_data, name)
+			return unit_data
 		except KeyError:
-			#list[item]
-			raise_TpE('item in data', dict)
+			raise InvalidUnit(name)
 	
-	def __getitem__(self, num):
-		try:
-			return self.list[num]
-		except IndexError:
-			raise StopIteration
-	
-	def __str__(self):
-		return str(self.list)
-	
-	def __repr__(self):
-		return str(self.list)
-	
-	def __len__(self):
-		return len(self.list)
+	def units(self):
+		for key in self.dict:
+			yield key
 
-class Category:
-	'''
-	'''
-	def __init__(self, source, name):
-		#overwrite source by source data, if type(source) is "Source", it can reduce memory usege
-		source = eval(asgmt_branch(source, 'type', {'str': "source_data[source]", 'Source': "source.data"}, obj_sig = 'source'))
+class ListCategory(ListBase, CategoryBase):
+	def __init__(self, file, name, data) -> None:
+		if type(data) is not list:
+			raise TypeError("ListCategory data must be list, "
+							f"not {data.__class__.__name__}")
 		
-		if name not in source:
-			raise_ICE(name)
-		
-		#pre-create category data
-		data = source[name]
-		
-		self.name = name
-		self.data = data
+		self.list = data
+		super().__init__(file, name)
+	
+	def __add__(self, o: object):
+		if isinstance(o, list):
+			data = self.list.__add__(o)
+		if isinstance(o, ListBase):
+			data = self.list.__add__(o.list)
 		
 		try:
-			#list[Unit]
-			#units may be None
-			list_unit = ListUnit(self, data)
-			branch = {
-				"name": "unit.name",
-				"title": "unit.title"
-			}
-			self.units = list_unit.units
-			self.dict = {eval(asgmt_branch(unit, attr_branch, branch)) if hasattr(unit, 'name') or hasattr(unit, 'title') else num: unit for num, unit in enumerate(list_unit)}
-			self.list = list(self.dict.values())
+			return ListCategory(self.file, self.name, data)
+		except NameError:
+			raise TypeError(f"unsupported operand type(s) for +: 'ListCategory' and '{o.__class__.__name__}'")
+	
+	def __iadd__(self, o: object):
+		if isinstance(o, list):
+			self.list.__iadd__(o)
+			return self
+		if isinstance(o, ListBase):
+			self.list.__iadd__(o.list)
+			return self
+		raise TypeError(f"unsupported operand type(s) for +: 'ListCategory' and '{o.__class__.__name__}'")
+	
+	def __mul__(self, o: object):
+		try:
+			return ListCategory(self.file, self.name, self.list.__mul__(o))
 		except TypeError:
-			#dict
-			self.keys = list(data.keys())
-			self.dict = data
-			self.list = list(data.values())
-		except InvalidCategoryError:
-			#list[item]
-			self.element = data
-			self.dict = {num: item for num, item in enumerate(data)}
-			self.list = data
+			raise TypeError(f"can't multiply sequence by non-int of type '{o.__class__.__name__}'")
 	
-	def __getitem__(self, num_of_item):
-		#need support both list and dict
-		if num_of_item < len(self.data):
-			#list of str or list of unit
+	def __imul__(self, o: object):
+		try:
+			self.list.__imul__(o)
+			return self
+		except TypeError:
+			raise TypeError(f"can't multiply sequence by non-int of type '{o.__class__.__name__}'")
+	
+	def __getitem__(self, target):
+		if isinstance(target, int):
 			try:
-				return self.data[num_of_item]
-			#dict
-			except KeyError:
-				return self.keys[num_of_item]
-		else:
-			raise StopIteration
+				unit_data = self.list[target]
+				unit_data_type = type(unit_data)
+				
+				try:
+					return type_to_unit[unit_data_type](self.file, self, unit_data)
+				except KeyError:
+					return unit_data
+			except IndexError:
+				raise IndexError("category index out of range")
+		if isinstance(target, slice):
+			return self.list[target.start:target.stop:target.step]
+		raise TypeError("category indices must be integers or slices, "
+						f"not {target.__class__.__name__}")
 	
-	def __str__(self):
-		return eval(asgmt_branch(self, attr_branch, {
-			'units': 'str(self.units)',
-			'keys': 'str(self.keys)',
-			'element': 'str(self.element)'
-		}))
-	
-	def __repr__(self):
-		self.__str__()
-	
-	def __len__(self):
-		return len(self.data)
+	def units(self):
+		for item in self.list:
+			yield item
