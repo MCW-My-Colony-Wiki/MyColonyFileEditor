@@ -1,8 +1,11 @@
 class UnitBase():
-	def __init__(self, category, data, name=None) -> None:
+	def __init__(self, file, category, data) -> None:
+		self.file = file
 		self.category = category
 		self.data = data
-		self.name = name
 	
 	def __str__(self) -> str:
-		return str(self.data) if self.name is None else self.name
+		return self.name if hasattr(self, "name") else str(self.data)
+	
+	def __repr__(self) -> str:
+		raise NotImplementedError("subclasses of UnitBase must provide a __repr__() method")

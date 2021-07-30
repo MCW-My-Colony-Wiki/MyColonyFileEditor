@@ -31,6 +31,6 @@ class Strings(FileBase):
 	def __getitem__(self, name):
 		try:
 			category_data = self.dict[name]
-			return ListCategory(self, name, category_data)
+			return DictCategory(self, name, category_data)
 		except KeyError:
 			raise InvalidCategory(name)

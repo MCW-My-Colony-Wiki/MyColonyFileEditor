@@ -1,17 +1,11 @@
 from .base import DictBase, ListBase
 from .categorybase import CategoryBase
 from .exceptions import InvalidUnit
-from .unit import (BoolUnit, DictUnit, FloatUnit, IntUnit, ListUnit, NoneUnit,
-                	StrUnit)
+from .unit import DictUnit, ListUnit
 
 type_to_unit = {
 	dict: DictUnit,
-	list: ListUnit,
-	str: StrUnit,
-	int: IntUnit,
-	float: FloatUnit,
-	bool: BoolUnit,
-	type(None): NoneUnit
+	list: ListUnit
 }
 
 class DictCategory(DictBase, CategoryBase):
@@ -26,7 +20,11 @@ class DictCategory(DictBase, CategoryBase):
 	def __getitem__(self, name):
 		try:
 			unit_data = self.dict[name]
-			return type_to_unit[type(unit_data)](self, unit_data, name)
+			unit_data_type = type(unit_data)
+			
+			if unit_data_type in type_to_unit:
+				return type_to_unit[unit_data_type](self.file, self, unit_data, name)
+			return unit_data
 		except KeyError:
 			raise InvalidUnit(name)
 	
@@ -42,11 +40,49 @@ class ListCategory(ListBase, CategoryBase):
 		self.list = data
 		super().__init__(file, name)
 	
+	def __add__(self, o: object):
+		if isinstance(o, list):
+			data = self.list.__add__(o)
+		if isinstance(o, ListBase):
+			data = self.list.__add__(o.list)
+		
+		try:
+			return ListCategory(self.file, self.name, data)
+		except NameError:
+			raise TypeError(f"unsupported operand type(s) for +: 'ListCategory' and '{o.__class__.__name__}'")
+	
+	def __iadd__(self, o: object):
+		if isinstance(o, list):
+			self.list.__iadd__(o)
+			return self
+		elif isinstance(o, ListBase):
+			self.list.__iadd__(o.list)
+			return self
+		raise TypeError(f"unsupported operand type(s) for +: 'ListCategory' and '{o.__class__.__name__}'")
+	
+	def __mul__(self, o: object):
+		try:
+			return ListCategory(self.file, self.name, self.list.__mul__(o))
+		except TypeError:
+			raise TypeError(f"can't multiply sequence by non-int of type '{o.__class__.__name__}'")
+	
+	def __imul__(self, o: object):
+		try:
+			self.list.__imul__(o)
+			return self
+		except TypeError:
+			raise TypeError(f"can't multiply sequence by non-int of type '{o.__class__.__name__}'")
+	
 	def __getitem__(self, target):
 		if isinstance(target, int):
 			try:
 				unit_data = self.list[target]
-				return type_to_unit[type(unit_data)](self, unit_data)
+				unit_data_type = type(unit_data)
+				
+				try:
+					return type_to_unit[unit_data_type](self.file, self, unit_data)
+				except KeyError:
+					return unit_data
 			except IndexError:
 				raise IndexError("category index out of range")
 		if isinstance(target, slice):

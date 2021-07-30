@@ -66,6 +66,13 @@ class FileBase(DictBase):
 		
 		mem_cache[file_name + self.version] = self
 	
+	def __eq__(self, o: object) -> bool:
+		if isinstance(o, str):
+			return o == self.name
+		if isinstance(o, FileBase):
+			return o == self
+		return False
+	
 	def __getitem__(self, name):
 		"""
 		Return DictCategory or ListCategory

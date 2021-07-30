@@ -46,7 +46,19 @@ class DictBase(CommonBase):
 
 class ListBase(CommonBase):
 	def __contains__(self, target):
-		return target in self.list
+		return self.list.__contains__(target)
+	
+	def __add__(self, o: object):
+		raise NotImplementedError("subclasses of ListBase must provide a __add__() method")
+	
+	def __iadd__(self, o: object):
+		raise NotImplementedError("subclasses of ListBase must provide a __iadd__() method")
+	
+	def __mul__(self, o: object):
+		raise NotImplementedError("subclasses of ListBase must provide a __mul__() method")
+	
+	def __imul__(self, o: object):
+		raise NotImplementedError("subclasses of ListBase must provide a __imul__() method")
 	
 	def __setitem__(self, target, data):
 		if isinstance(target, int):
@@ -71,7 +83,7 @@ class ListBase(CommonBase):
 			yield self[i]
 	
 	def __len__(self):
-		return len(self.list)
+		return self.list.__len__()
 	
 	def append(self, __object):
 		self.list.append(__object)
