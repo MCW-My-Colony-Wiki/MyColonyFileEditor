@@ -9,11 +9,11 @@ with open('requirements.txt', 'r', encoding = 'UTF-8') as require:
 setuptools.setup(
 	name = 'mcp',
 	url = 'https://github.com/Euxcbsks/mcp',
-	version = '0.0.1',
+	version = '1.0.0',
 	author = 'Euxcbsks',
 	author_email = 'hawhaw02030746@gmail.com',
 	license = 'MIT',
-	description = 'mcp - My Colony Py',
+	description = 'mcp - My Colony Python',
 	long_description = long_description,
 	long_description_content_type = 'text/markdown',
 	install_requires = requirements,
