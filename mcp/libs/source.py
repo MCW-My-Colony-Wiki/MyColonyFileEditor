@@ -23,10 +23,11 @@ def format_source_data(data: str) -> dict:
 								if t == "\n":
 									comment_end_pos = err_pos + j + 1
 									return format_source_data(data.replace(data[err_pos:comment_end_pos], ""))
+					return format_source_data(data[err_pos:])
 				if err_msg == "Extra data":
-					for j, t in enumerate(data[::-1]):
+					for j, t in enumerate(data[err_pos - 1::-1]):
 						if t == "}":
-							return format_source_data(data[:-j])
+							return format_source_data(data[:err_pos + j])
 				if err_msg == "Expecting value":
 					return format_source_data(sub(r': *\.', ': 0.', data))
 					
