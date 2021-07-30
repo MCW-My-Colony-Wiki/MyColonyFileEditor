@@ -27,7 +27,7 @@ class DictUnit(DictBase, UnitBase):
 		return f"<File: '{self.file}', Category: '{self.category}', Name: '{self.name}'>"
 
 class ListUnit(ListBase, UnitBase):
-	def __init__(self, file, category, data, name=None) -> None:
+	def __init__(self, file, category, data) -> None:
 		self.list = data
 		super().__init__(file, category, data)
 	

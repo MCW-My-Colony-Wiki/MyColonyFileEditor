@@ -31,9 +31,8 @@ def _data_parser(data: Union[str, list, tuple, set, dict]):
 def _timeout_parser(timeout: Union[int, None]):
 	if timeout is None or type(timeout) is int:
 		return int(time()) + timeout if timeout is not None else None
-	else:
-		raise TypeError("the `timeout` must be None or int, "
-						f"not {timeout.__class__.__name__}")
+	raise TypeError("the `timeout` must be None or int, "
+					f"not {timeout.__class__.__name__}")
 
 class FileCache():
 	def __init__(self, folder_path: Path, file_name: str) -> None:
@@ -195,8 +194,7 @@ class MemCache:
 	def get(self):
 		if not self.is_expried():
 			return self.data
-		else:
-			raise CacheTimeout
+		raise CacheTimeout
 	
 	def update(self, data, timeout: Union[int, None] = DEFAULT_TIMEOUT):
 		self.timeout = _timeout_parser(timeout)

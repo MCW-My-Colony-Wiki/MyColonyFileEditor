@@ -56,7 +56,7 @@ class ListCategory(ListBase, CategoryBase):
 		if isinstance(o, list):
 			self.list.__iadd__(o)
 			return self
-		elif isinstance(o, ListBase):
+		if isinstance(o, ListBase):
 			self.list.__iadd__(o.list)
 			return self
 		raise TypeError(f"unsupported operand type(s) for +: 'ListCategory' and '{o.__class__.__name__}'")
