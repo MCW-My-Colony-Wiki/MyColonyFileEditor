@@ -4,6 +4,8 @@
 .venv/
 .vscode/
 mcp/cache/
+pstat/
 
 __main__.py
 config.ini
+test.py
