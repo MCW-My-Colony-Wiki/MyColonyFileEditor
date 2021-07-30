@@ -5,7 +5,7 @@ from pathlib import Path
 from requests import Timeout, URLRequired, codes, get
 
 from ..config import config
-from ..exceptions import CacheTimeout, InvalidVersion, InvalidVersionChannel, InvalidFile
+from ..exceptions import CacheTimeout, InvalidFileVersion, InvalidFileChannel, InvalidFile
 from .cache import FileCache, MemCache, get_mem_cache, update_mem_cache
 
 cache_folder_path = Path(__file__).parent.parent / "cache" / "page"
@@ -47,7 +47,7 @@ def get_channel_version(channel) -> str:
 		
 		# Data has been added to mem_cache
 		try:
-			return get_mem_cache(mem_cache, channel_version_page_url)[channel_key]
+			return get_mem_cache(mem_cache, channel_version_page_url).data[channel_key]
 		# Data is not in mem_cache
 		except KeyError:
 			# Create FileCache to get data
@@ -56,11 +56,12 @@ def get_channel_version(channel) -> str:
 			# Cache file is created
 			try:
 				version_data: dict = file_cache.json()
+				mem_cache[channel_version_page_url] = MemCache(version_data)
 			# Cache file is not created
 			except FileNotFoundError:
 				version_data: dict = get_page(channel_version_page_url).json()
 				file_cache.create(version_data)
-				mem_cache[channel_version_page_url] = MemCache(file_cache.timeout, version_data)
+				mem_cache[channel_version_page_url] = MemCache(version_data)
 			# Cache file is created but timeout
 			except CacheTimeout:
 				version_data: dict = get_page(channel_version_page_url).json()
@@ -75,7 +76,7 @@ def get_channel_version(channel) -> str:
 			
 			return version_data[channel_key]
 	except KeyError:
-		raise InvalidVersionChannel(channel)
+		raise InvalidFileChannel(channel)
 
 def get_valid_version() -> list[str]:
 	game_version_page_url = "https://coloniae.space/static/json/gameversions/"
@@ -127,11 +128,6 @@ def get_valid_version() -> list[str]:
 		return valid_version
 
 def get_source(version, file) -> str:
-	valid_version = get_valid_version()
-	
-	if version not in valid_version:
-		raise InvalidVersion(version)
-	
 	def get_source_data(source_page_url):
 		page = get_page(source_page_url)
 		page.encoding = "utf-8"

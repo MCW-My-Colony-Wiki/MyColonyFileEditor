@@ -7,8 +7,10 @@ from typing import Union
 from ..exceptions import CacheTimeout, InvalidTimeout
 
 __all__ = [
-	"write_cache",
-	"read_cache"
+	"FileCache",
+	"MemCache",
+	"get_mem_cache",
+	"update_mem_cache"
 ]
 
 DEFAULT_TIMEOUT = 24 * 60 * 60 # 86400 seconds
@@ -28,7 +30,7 @@ def _data_parser(data: Union[str, list, tuple, set, dict]):
 
 def _timeout_parser(timeout: Union[int, None]):
 	if timeout is None or type(timeout) is int:
-		return int(time()) + timeout if timeout != None else None
+		return int(time()) + timeout if timeout is not None else None
 	else:
 		raise TypeError("the `timeout` must be None or int, "
 						f"not {timeout.__class__.__name__}")
@@ -47,6 +49,8 @@ class FileCache():
 		
 		self._path = folder_path / file_name
 		self._parent = folder_path
+		self.timeout = None
+		self.data = None
 	
 	def create(self, data: Union[str, list, tuple, set, dict], timeout: Union[int, None] = DEFAULT_TIMEOUT):
 		"""Create file cache at path with gived data
@@ -77,8 +81,8 @@ class FileCache():
 		try:
 			self.timeout = _timeout_parser(timeout)
 			self.data = _data_parser(data)
-		except TypeError:
-			raise
+		except TypeError as e:
+			raise TypeError(e.args)
 		
 		with self._path.open("w", encoding="UTF-8") as f:
 			# Add timeout to first line of cache file
@@ -94,6 +98,8 @@ class FileCache():
 		-----
 		FileNotFoundError:
 			when cache is not created
+		CacheTimeout:
+			when cache is timeout
 		"""
 		# Do not open same cache file twice if it is not timeout
 		try:
@@ -144,7 +150,7 @@ class FileCache():
 	def exists(self):
 		return self._path.exists()
 	
-	def is_expried(self):
+	def is_expired(self):
 		try:
 			timeout = self.timeout
 		except AttributeError:
@@ -153,7 +159,8 @@ class FileCache():
 		
 		return self._is_expired(timeout)
 	
-	def _is_expired(self, timeout: Union[int, None]):
+	@staticmethod
+	def _is_expired(timeout: Union[int, None]):
 		if timeout is not None and timeout < time():
 			return True
 		return False
@@ -167,7 +174,8 @@ class FileCache():
 		f.seek(0)
 		return timeout
 	
-	def _timeout_converter(self, timeout: str) -> Union[int, None]:
+	@staticmethod
+	def _timeout_converter(timeout: str) -> Union[int, None]:
 		# `timeout` can only be None or int
 		if timeout == "None":
 			timeout = None
@@ -199,18 +207,18 @@ class MemCache:
 			return True
 		return False
 
-def get_mem_cache(mem_cache: dict[str, MemCache], key: str):
+def get_mem_cache(mem_cache_dict: dict[str, MemCache], key: str):
 	"""Get MemCache with gived key
 	
 	Raise
 	-----
 	KeyError:
-		when key not in `mem_cache`
+		when key not in `mem_cache_dict`
 	CacheTimeout:
 		when cache is timeout
 	"""
 	try:
-		cache = mem_cache[key]
+		cache = mem_cache_dict[key]
 		
 		if not isinstance(cache, MemCache):
 			raise TypeError("value in `mem_cache` must be `MemCache`, "
@@ -223,9 +231,9 @@ def get_mem_cache(mem_cache: dict[str, MemCache], key: str):
 	except CacheTimeout:
 		raise
 
-def update_mem_cache(mem_cache: dict, key: str, data, timeout: Union[int, None] = DEFAULT_TIMEOUT):
+def update_mem_cache(mem_cache_dict: dict, key: str, data, timeout: Union[int, None] = DEFAULT_TIMEOUT):
 	try:
-		cache: MemCache = mem_cache[key]
+		cache: MemCache = mem_cache_dict[key]
 		cache.update(data, timeout)
 	except KeyError:
 		cache = MemCache(data, timeout)
