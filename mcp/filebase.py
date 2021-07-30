@@ -87,7 +87,8 @@ class FileBase(DictBase):
 		return f"<File: '{self.name}', Version: '{self.version}'>"
 	
 	def categories(self):
-		return [*self.dict.keys()]
+		for key in self.dict:
+			yield key
 	
 	def copy(self):
 		# `self.__class__` is FileBase subclass, so don't need to pass in `self.name`
@@ -102,8 +103,3 @@ class FileBase(DictBase):
 		self.version = file.version
 		self.dict.update(file.dict)
 	
-	def popitem(self):
-		try:
-			return self.dict.popitem()
-		except KeyError:
-			raise KeyError("popitem(): dictionary is empty")

@@ -29,7 +29,8 @@ class DictCategory(DictBase, CategoryBase):
 			raise InvalidUnit(name)
 	
 	def units(self):
-		return [*self.dict.keys()]
+		for key in self.dict:
+			yield key
 
 class ListCategory(ListBase, CategoryBase):
 	def __init__(self, file, name, data) -> None:
@@ -91,4 +92,5 @@ class ListCategory(ListBase, CategoryBase):
 						f"not {target.__class__.__name__}")
 	
 	def units(self):
-		return self.list
+		for item in self.list:
+			yield item

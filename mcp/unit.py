@@ -42,5 +42,8 @@ class ListUnit(ListBase, UnitBase):
 		raise TypeError("list indices must be integers or slices, "
 						f"not {target.__class__.__name__}")
 	
+	def __str__(self):
+		return str(self.list)
+	
 	def __repr__(self) -> str:
 		return f"<File: '{self.file}', Category: '{self.category}'>"

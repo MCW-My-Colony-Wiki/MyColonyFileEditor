@@ -20,10 +20,18 @@ class DictBase(CommonBase):
 	
 	def __iter__(self):
 		for key in self.dict:
-			yield self[key]
+			yield key
 	
 	def __len__(self):
 		return len(self.dict)
+	
+	def keys(self):
+		for key in self.dict:
+			yield key
+	
+	def values(self):
+		for key in self.dict:
+			yield self[key]
 	
 	def items(self):
 		for key in self.dict:
@@ -43,6 +51,12 @@ class DictBase(CommonBase):
 			return self.dict.pop(name)
 		except KeyError:
 			return default
+	
+	def popitem(self):
+		try:
+			return self.dict.popitem()
+		except KeyError:
+			raise KeyError("popitem(): dictionary is empty")
 
 class ListBase(CommonBase):
 	def __contains__(self, target):
