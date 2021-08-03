@@ -1,6 +1,6 @@
 # mcp - My Colony Python
 
-  [![DeepSource](https://deepsource.io/gh/MCW-My-Colony-Wiki/mcp.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/MCW-My-Colony-Wiki/mcp/?ref=repository-badge)
+  [![DeepSource](https://deepsource.io/gh/MCW-My-Colony-Wiki/MyColonyFileParser.svg/?label=active+issues&show_trend=true&token=zjOyAP4RLEuWcm5YOU1NQJW_)](https://deepsource.io/gh/MCW-My-Colony-Wiki/MyColonyFileParser/?ref=repository-badge)
   
   [中文版readme](README_zh.md)
   
@@ -10,6 +10,10 @@
 
 - [Config](##Config)
 - [Classes](##Classes)
+  - [Base](###Base)
+    - [CommonBase](####CommonBase)
+    - [DictBase](####DictBase)
+    - [ListBase](####ListBase)
   - [FileBase](###FileBase)
   - [CategoryBase](###CategoryBase)
     - [DictCategory](####DictCategory)
@@ -17,25 +21,45 @@
   - [UnitBase](###UnitBase)
     - [DictUnit](####DictUnit)
     - [ListUnit](####ListUnit)
-  - [Base](###Base)
-    - [DictBase](####DictBase)
-    - [ListBase](####ListBase)
 
 ## Config
 
 - Description: this module use `configparser` that in stdlib to provide config function
-- Path: `mcp.config.config`
+- Path: `mcfp.config.config`
 - Sections
   - `network`
     - Options
-      - `timeout: int = 3`: timeout of all the network related function
+      - `timeout`(int, default=3): timeout of all the network related function
 
 ## Classes
+
+### Base
+
+#### CommonBase
+
+- Description: provide generic method
+- Path: `mcfp.base.CommonBase`
+- Method
+  - `__delattr__`: disable `del object.attr`
+  - `__str__`: return `self.name`
+
+#### DictBase
+
+- Description: provide method of `dict` object
+- Path: `mcfp.base.DictBase`
+- Inherit: [CommonBase](####CommonBase)
+
+#### ListBase
+
+- Description: provide method of `list` object
+- Path: `mcfp.base.ListBase`
+- Inherit: [CommonBase](####CommonBase)
 
 ### FileBase
 
 - Description: basically same as `dict` object
-- Path: `mcp.filebase.FileBase`
+- Path: `mcfp.filebase.FileBase`
+- Inherit: [DictBase](####DictBase)
 - Attributes
   - `name`: file name
   - `dict`: file data
@@ -44,7 +68,7 @@
 
 ### CategoryBase
 
-- Path: `mcp.categorybase.CategoryBase`
+- Path: `mcfp.categorybase.CategoryBase`
 - Common attributes
   - `file`: instance of subclass of FileBase which this category belong
   - `name`: category name
@@ -55,7 +79,8 @@
 #### DictCategory
 
 - Description: basically same as `dict` object
-- Path: `mcp.category.DictCategory`
+- Path: `mcfp.category.DictCategory`
+- Inherit: [DictBase](####DictBase), [CategoryBase](###CategoryBase)
 - Attributes
   - `dict`: alias of `self.data`
 - Method
@@ -64,7 +89,8 @@
 #### ListCategory
 
 - Description: basically same as `list` object
-- Path: `mcp.category.ListCategory`
+- Path: `mcfp.category.ListCategory`
+- Inherit: [ListBase](####ListBase), [CategoryBase](###CategoryBase)
 - Attributes
   - `list`: alias of `self.data`
 - Method
@@ -72,7 +98,7 @@
 
 ### UnitBase
 
-- Path: `mcp.unitbase.UnitBase`
+- Path: `mcfp.unitbase.UnitBase`
 - Common attributes
   - `file`: instance of subclass of FileBase which this unit belong, same as `category.file`
   - `category`: instance of subclass of CategoryBase which this unit belong
@@ -81,29 +107,11 @@
 #### DictUnit
 
 - Description: basically same as `dict` object
-- Path: `mcp.unit.DictUnit`
+- Path: `mcfp.unit.DictUnit`
+- Inherit: [DictBase](####DictBase), [UnitBase](###UnitBase)
 
 #### ListUnit
 
-- Descriptionn: basically same as `list` object
-- Path: `mcp.unit.ListUnit`
-
-### Base
-
-#### CommonBase
-
-- Description: provide generic method
-- Path: `mcp.base.CommonBase`
-- Method
-  - `__delattr__`: disable `del object.attr`
-  - `__str__`: return `self.name`
-
-#### DictBase
-
-- Description: provide method of `dict` object
-- Path: `mcp.base.DictBase`
-
-#### ListBase
-
-- Description: provide method of `list` object
-- Path: `mcp.base.ListBase`
+- Description: basically same as `list` object
+- Path: `mcfp.unit.ListUnit`
+- Inherit: [ListBase](####ListBase), [UnitBase](###UnitBase)

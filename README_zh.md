@@ -1,6 +1,6 @@
 # mcp - My Colony Python
 
-  [![DeepSource](https://deepsource.io/gh/MCW-My-Colony-Wiki/mcp.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/MCW-My-Colony-Wiki/mcp/?ref=repository-badge)
+  [![DeepSource](https://deepsource.io/gh/MCW-My-Colony-Wiki/MyColonyFileParser.svg/?label=active+issues&show_trend=true&token=zjOyAP4RLEuWcm5YOU1NQJW_)](https://deepsource.io/gh/MCW-My-Colony-Wiki/MyColonyFileParser/?ref=repository-badge)
   
   [english ver readme](README.md)
   
@@ -10,6 +10,10 @@
 
 - [Config](##Config)
 - [Classes](##Classes)
+  - [Base](###Base)
+    - [CommonBase](####CommonBase)
+    - [DictBase](####DictBase)
+    - [ListBase](####ListBase)
   - [FileBase](###FileBase)
   - [CategoryBase](###CategoryBase)
     - [DictCategory](####DictCategory)
@@ -17,9 +21,6 @@
   - [UnitBase](###UnitBase)
     - [DictUnit](####DictUnit)
     - [ListUnit](####ListUnit)
-  - [Base](###Base)
-    - [DictBase](####DictBase)
-    - [ListBase](####ListBase)
 
 ## Config
 
@@ -32,10 +33,33 @@
 
 ## Classes
 
+### Base
+
+#### CommonBase
+
+- 說明: 提供通用方法
+- 路徑: `mcfp.base.CommonBase`
+- 方法
+  - `__delattr__`: 禁用`del object.attr`
+  - `__str__`: 返回`self.name`
+
+#### DictBase
+
+- 說明: 提供`dict`物件的方法
+- 路徑: `mcfp.base.DictBase`
+- 繼承: [CommonBase](####CommonBase)
+
+#### ListBase
+
+- 說明: 提供`list`物件的方法
+- 路徑: `mcfp.base.ListBase`
+- 繼承: [CommonBase](####CommonBase)
+
 ### FileBase
 
 - 說明: 基本與`dict`物件相同
-- 路徑: `mcp.filebase.FileBase`
+- 路徑: `mcfp.filebase.FileBase`
+- 繼承: [DictBase](####DictBase)
 - 屬性
   - `name`: file的名稱
   - `dict`: file的資料
@@ -44,7 +68,7 @@
 
 ### CategoryBase
 
-- 路徑: `mcp.categorybase.CategoryBase`
+- 路徑: `mcfp.categorybase.CategoryBase`
 - 通用屬性
   - `file`: category所屬的FileBase子類的實例
   - `name`: category的名稱
@@ -55,7 +79,8 @@
 #### DictCategory
 
 - 說明: 基本與`dict`物件相同
-- 路徑: `mcp.category.DictCategory`
+- 路徑: `mcfp.category.DictCategory`
+- 繼承: [DictBase](####DictBase), [CategoryBase](###CategoryBase)
 - 屬性
   - `dict`: `self.data`的別名
 - 方法
@@ -64,7 +89,8 @@
 #### ListCategory
 
 - 說明: 基本與`list`物件相同
-- 路徑: `mcp.category.ListCategory`
+- 路徑: `mcfp.category.ListCategory`
+- 繼承: [ListBase](####ListBase), [CategoryBase](###CategoryBase)
 - 屬性
   - `list`: `self.data`的別名
 - 方法
@@ -72,7 +98,7 @@
 
 ### UnitBase
 
-- 路徑: `mcp.unitbase.UnitBase`
+- 路徑: `mcfp.unitbase.UnitBase`
 - Common 屬性
   - `file`: unit所屬的FileBase子類的實例，與`category.file`相同
   - `category`: unit所屬的CategoryBase子類的實例
@@ -81,29 +107,11 @@
 #### DictUnit
 
 - 說明: 基本與`dict`物件相同
-- 路徑: `mcp.unit.DictUnit`
+- 路徑: `mcfp.unit.DictUnit`
+- 繼承: [DictBase](####DictBase), [UnitBase](###UnitBase)
 
 #### ListUnit
 
-- 說明n: 基本與`list`物件相同
-- 路徑: `mcp.unit.ListUnit`
-
-### Base
-
-#### CommonBase
-
-- 說明: provide generic 方法
-- 路徑: `mcp.base.CommonBase`
-- 方法
-  - `__delattr__`: 禁用`del object.attr`
-  - `__str__`: 返回`self.name`
-
-#### DictBase
-
-- 說明: 提供`dict`物件的方法
-- 路徑: `mcp.base.DictBase`
-
-#### ListBase
-
-- 說明: 提供`list`物件的方法
-- 路徑: `mcp.base.ListBase`
+- 說明: 基本與`list`物件相同
+- 路徑: `mcfp.unit.ListUnit`
+- 繼承: [ListBase](####ListBase), [UnitBase](###UnitBase)
