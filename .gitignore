@@ -3,7 +3,7 @@
 
 .venv/
 .vscode/
-mcp/cache/
+mcfp/cache/
 pstat/
 
 __main__.py
