@@ -5,7 +5,7 @@ from pathlib import Path
 from requests import Timeout, URLRequired, codes, get
 
 from ..config import config
-from ..exceptions import CacheTimeout, InvalidFileVersion, InvalidFileChannel, InvalidFile
+from ..exceptions import CacheTimeout, InvalidFileChannel, InvalidFileName
 from .cache import FileCache, MemCache, get_mem_cache, update_mem_cache
 
 cache_folder_path = Path(__file__).parent.parent / "cache" / "page"
@@ -163,5 +163,5 @@ def get_source(version, file) -> str:
 			mem_cache[source_page_url] = update_mem_cache(mem_cache, source_page_url, source_data, None)
 			return source_data
 	except KeyError:
-		raise InvalidFile(file)
+		raise InvalidFileName(file)
 	

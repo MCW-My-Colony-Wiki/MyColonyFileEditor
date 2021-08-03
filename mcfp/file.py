@@ -1,5 +1,5 @@
 from .category import DictCategory, ListCategory
-from .exceptions import InvalidCategory
+from .exceptions import InvalidCategoryName
 from .filebase import FileBase
 
 
@@ -22,7 +22,7 @@ class Game(FileBase):
 			category_data = self.dict[name]
 			return type_to_Category[type(category_data)](self, name, category_data)
 		except KeyError:
-			raise InvalidCategory(name)
+			raise InvalidCategoryName(name)
 
 class Strings(FileBase):
 	def __init__(self, channel = "stable", cache = True, *, version = None) -> None:
@@ -33,4 +33,4 @@ class Strings(FileBase):
 			category_data = self.dict[name]
 			return DictCategory(self, name, category_data)
 		except KeyError:
-			raise InvalidCategory(name)
+			raise InvalidCategoryName(name)

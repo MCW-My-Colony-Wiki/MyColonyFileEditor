@@ -1,14 +1,14 @@
-class MCPerror(Exception):
+class MCFPError(Exception):
 	def __init__(self) -> None:
 		"""
-		Base exception of mcp
+		Base exception of mcfp
 		"""
 		pass
 
-class FileError(MCPerror):
+class FileError(MCFPError):
 	def __init__(self) -> None:
 		"""
-		Class File related error
+		File related error
 		"""
 		pass
 
@@ -32,51 +32,51 @@ class InvalidFileVersion(FileError):
 	def __str__(self) -> str:
 		return f"Invalid file version: {self.version}"
 
-class InvalidFile(FileError):
-	def __init__(self, file) -> None:
+class InvalidFileName(FileError):
+	def __init__(self, name) -> None:
 		"""
-		Invalid file: `file`
+		Invalid file name: `file`
 		"""
-		self.file = file
+		self.name = name
 		
 	def __str__(self) -> str:
-		return f"Invalid file: {self.file}"
+		return f"Invalid file name: {self.name}"
 
-class CategoryError(MCPerror):
+class CategoryError(MCFPError):
 	def __init__(self) -> None:
 		"""
-		Class Category related error
+		Category related error
 		"""
 		pass
 
-class InvalidCategory(CategoryError):
+class InvalidCategoryName(CategoryError):
 	def __init__(self, name) -> None:
 		"""
-		Invalid category: `name`
+		Invalid category name: `name`
 		"""
 		self.name = name
 	
 	def __str__(self) -> str:
-		return f"Invalid category: {self.name}"
+		return f"Invalid category name: {self.name}"
 
-class UnitError(MCPerror):
+class UnitError(MCFPError):
 	def __init__(self) -> None:
 		"""
-		Class Unit related error
+		Unit related error
 		"""
 		pass
 
-class InvalidUnit(UnitError):
+class InvalidUnitName(UnitError):
 	def __init__(self, name) -> None:
 		"""
-		Invalid unit: `name`
+		Invalid unit name: `name`
 		"""
 		self.name = name
 	
 	def __str__(self) -> str:
-		return f"Invalid unit: {self.name}"
+		return f"Invalid unit name: {self.name}"
 
-class CacheError(MCPerror):
+class CacheError(MCFPError):
 	def __init__(self) -> None:
 		"""
 		Class Cache related error

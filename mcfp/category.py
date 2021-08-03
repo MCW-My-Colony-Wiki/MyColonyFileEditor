@@ -1,6 +1,6 @@
 from .base import DictBase, ListBase
 from .categorybase import CategoryBase
-from .exceptions import InvalidUnit
+from .exceptions import InvalidUnitName
 from .unit import DictUnit, ListUnit
 
 type_to_unit = {
@@ -26,7 +26,7 @@ class DictCategory(DictBase, CategoryBase):
 				return type_to_unit[unit_data_type](self.file, self, unit_data, name)
 			return unit_data
 		except KeyError:
-			raise InvalidUnit(name)
+			raise InvalidUnitName(name)
 	
 	def units(self):
 		for key in self.dict:
