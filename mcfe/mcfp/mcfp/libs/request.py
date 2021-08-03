@@ -21,7 +21,7 @@ def hash_md5(value: str):
 	return m.hexdigest()
 
 def get_page(url: str):
-	timeout = config["requests"].getfloat("timeout")
+	timeout = config["network"].getfloat("timeout")
 	
 	while True:
 		try:
