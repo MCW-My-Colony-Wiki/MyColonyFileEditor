@@ -9,7 +9,9 @@ from ..exceptions import CacheTimeout, InvalidFileChannel, InvalidFileName
 from .cache import FileCache, MemCache, get_mem_cache, update_mem_cache
 
 cache_folder_path = Path(__file__).parent.parent / "cache" / "page"
-source_url = {
+urls = {
+	"channel_version": "https://coloniae.space/static/json/mycolony_version.json",
+	"game_version": "https://www.apewebapps.com/apps/my-colony/",
 	"game": "https://www.apewebapps.com/apps/my-colony/{version}/game.js",
 	"strings": "https://www.apewebapps.com/apps/my-colony/{version}/strings.js"
 }
@@ -43,7 +45,7 @@ def get_channel_version(channel) -> str:
 	
 	try:
 		channel_key = channel_to_key[channel]
-		channel_version_page_url = 'https://coloniae.space/static/json/mycolony_version.json'
+		channel_version_page_url = urls["channel_version"]
 		
 		# Data has been added to mem_cache
 		try:
@@ -78,19 +80,20 @@ def get_channel_version(channel) -> str:
 	except KeyError:
 		raise InvalidFileChannel(channel)
 
-def get_valid_version() -> list[str]:
-	game_version_page_url = "https://coloniae.space/static/json/gameversions/"
+def get_valid_version() -> set[str]:
+	game_version_page_url = urls["game_version"]
 	
 	class Parser(HTMLParser):
 		def __init__(self) -> None:
 			super().__init__()
-			self.version = []
+			self.version = set()
 		
 		def handle_starttag(self, tag: str, attrs) -> None:
 			if tag == "a":
 				for name, value in attrs:
-					if name == "href" and ".json" in value:
-						self.version.append(value[:-5]) #[:-5] -> remove suffix
+					value: str
+					if name == "href" and not value.startswith("/") and value.endswith("/"):
+						self.version.add(value[:-1]) # [:-1] -> remove suffix "/"
 	
 	def parse_valid_version(game_version_page_url):
 		parser = Parser()
@@ -134,7 +137,7 @@ def get_source(version, file) -> str:
 		return page.text
 	
 	try:
-		source_page_url = source_url[file].format(version=version)
+		source_page_url = urls[file].format(version=version)
 		
 		# Data has been added to mem_cache
 		try:

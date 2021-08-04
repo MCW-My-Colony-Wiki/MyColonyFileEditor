@@ -18,13 +18,9 @@ DEFAULT_TIMEOUT = 24 * 60 * 60 # 86400 seconds
 # Objects in mem_cache should only be instances of FileCache
 mem_cache = {}
 
-def _data_parser(data: Union[str, list, tuple, set, dict]):
-	if not isinstance(data, str):
-		try:
-			data = dumps(data, ensure_ascii=False)
-		except TypeError:
-			raise TypeError("the `data` must be `str`, `list`, `tuple`, `set` or `dict`, "
-							f"not {data.__class__.__name__}")
+def _data_parser(data: Union[str, list, tuple, set, dict]) -> str:
+	if not isinstance(data, str) and type(data) in {str, list, tuple, set, dict}:
+		data = str(data)
 	
 	return data
 
